@@ -1,0 +1,28 @@
+{
+  "name": "discord-boss-tracker",
+  "version": "1.0.0",
+  "description": "Discord bot for tracking Black Desert Online bosses.",
+  "main": "index.js",
+  "scripts": {
+    "dev": "cross-env NODE_ENV=development nodemon app",
+    "bot": "node index.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "license": "ISC",
+  "devDependencies": {
+    "nodemon": "^2.0.20"
+  },
+  "dependencies": {
+    "@prisma/client": "^4.10.1",
+    "canvas": "^2.11.0",
+    "cross-env": "^7.0.3",
+    "dayjs": "^1.11.7",
+    "discord.js": "^14.7.1",
+    "dotenv": "^16.0.3",
+    "node-cron": "^3.0.2",
+    "node-google-calendar": "^1.1.1",
+    "prisma": "^4.10.1"
+  }
+}

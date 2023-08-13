@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["orderByNulls"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Config {
+  id                Int       @id @default(autoincrement())
+  isMaintenance     Boolean
+  nextMaintenance   DateTime?
+  maintenanceLength Int?
+  isSeason          Boolean
+}
+
+model Channel {
+  id        Int     @id @default(autoincrement())
+  name      String  @unique
+  shortName String  @unique
+  aliases   String
+  isArsha   Boolean
+  isSeason  Boolean
+}
+
+model Boss {
+  id               Int       @id @default(autoincrement())
+  name             String    @unique
+  shortName        String    @unique
+  aliases          String
+  info             String?
+  avatar           String
+  nextSpawn        DateTime?
+  lastSpawn        DateTime?
+  isWorldBoss      Boolean
+  status           Json[]
+  inWindow         Boolean?
+  windowStart      DateTime?
+  windowEnd        DateTime?
+  windowCooldown   Int?
+  clearTime        DateTime?
+  forceDespawnTime Int       @default(30)
+  forceClearTime   Int       @default(31)
+  isUber           Boolean   @default(false)
+  uberOf           Int?
+}
