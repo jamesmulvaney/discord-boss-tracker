@@ -39,7 +39,7 @@ function parseElapsed(time) {
     formattedTime = dayjs.duration(currTime.diff(startTime)).format("m[m]");
   } else if (
     currTime.diff(startTime, "seconds") >= 3600 &&
-    currTime.diff(startTime, "seconds") < 604800
+    currTime.diff(startTime, "seconds") < 86400
   ) {
     formattedTime = dayjs.duration(currTime.diff(startTime)).format("H[h]m[m]");
   } else {

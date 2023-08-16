@@ -172,7 +172,7 @@ class Boss {
       c.send({
         content: `\`${dayjs().utc().format("YYYY-MM-DDTHH:mm:ss")} UTC\` <#${
           process.env.STATUS_CHANNEL_ID
-        }> \`${this.shortName}-UP\` <@${this.calledBy.id}>`,
+        }> \`${this.shortName}-Spawned\` <@${this.calledBy.id}>`,
       });
     });
   }
@@ -181,10 +181,12 @@ class Boss {
   setHealth(channel, health, message) {
     let type = "Alive";
     let channelTag = "ALL";
+    let hp = health;
 
     if (this.isWorldBoss) {
       if (health === "undo") {
         this.status[0].currentHealth = this.status[0].previousHealth;
+        hp = this.status[0].currentHealth;
       } else {
         this.status[0].previousHealth = this.status[0].currentHealth;
         this.status[0].currentHealth = health;
@@ -207,23 +209,21 @@ class Boss {
         if (s.channel.name === channel) {
           if (health === "undo") {
             s.currentHealth = s.previousHealth;
+            hp = s.currentHealth;
+
+            const healthType = this.getHealthType("", s.previousHealth);
+            type = healthType.type;
+            s.clear = health.clear;
           } else {
             s.previousHealth = s.currentHealth;
             s.currentHealth = health;
+
+            const healthType = this.getHealthType(s.currentHealth, "");
+            type = healthType.type;
+            s.clear = health.clear;
           }
 
           s.updated = dayjs().utc().format();
-          if (s.currentHealth === "Dead") {
-            type = "Killed";
-            s.clear = true;
-          } else if (s.currentHealth === "Desp") {
-            type = "Despawned";
-            s.clear = true;
-          } else if (s.currentHealth === "DNS") {
-            type = "DidNotSpawn";
-            s.clear = true;
-          }
-
           channelTag = s.channel.shortName;
 
           //Check if all the channels are clear
@@ -234,20 +234,44 @@ class Boss {
       });
     }
 
+    if (hp === "Dead" || hp === "Desp" || hp === "DNS") hp = "0";
+
     this.client.channels.fetch(process.env.LOG_CHANNEL_ID).then((c) =>
       c.send({
         content: `\`${dayjs().utc().format("YYYY-MM-DDTHH:mm:ss")} UTC\` <#${
           process.env.STATUS_CHANNEL_ID
-        }> \`${channelTag}-${
-          this.shortName
-        }-${health.toUpperCase()}-${type}\` <@${message.author.id}> \`${
-          message.content
-        }\``,
+        }> \`${channelTag}-${this.shortName}-${hp}-${type}\` <@${
+          message.author.id
+        }> \`${message.content}\``,
       })
     );
 
     //Update the boss health in the database
     updateStatus(this.id, this.status);
+  }
+
+  getHealthType(currentHealth, previousHealth) {
+    if (currentHealth === "Dead" || previousHealth === "Dead") {
+      return {
+        type: "Dead",
+        clear: true,
+      };
+    } else if (currentHealth === "Desp" || previousHealth === "Desp") {
+      return {
+        type: "Despawned",
+        clear: true,
+      };
+    } else if (currentHealth === "DNS" || previousHealth === "Desp") {
+      return {
+        type: "DidNotSpawn",
+        clear: true,
+      };
+    } else {
+      return {
+        type: "Alive",
+        clear: false,
+      };
+    }
   }
 
   //Check if all channels are clear for field boss
@@ -407,7 +431,7 @@ class Boss {
 
     if (this.isWorldBoss) {
       //Killed or desp
-      if (type === "dead") {
+      if (type === "Dead") {
         embedField.push({
           name: "**Killed**",
           value: "All Channels",

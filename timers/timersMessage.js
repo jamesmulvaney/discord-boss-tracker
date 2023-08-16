@@ -54,7 +54,7 @@ async function timersMessage(client) {
     let name = ab.shortName;
 
     if (name.length < 17) {
-      name = name.padEnd(name.length + (20 - (name.length + uptime.length)));
+      name = name.padEnd(name.length + (18 - (name.length + uptime.length)));
     }
 
     activeList += `${name} ${uptime} elapsed            \n`;
@@ -68,11 +68,11 @@ async function timersMessage(client) {
     let name = b.shortName;
 
     if (name.length < 17) {
-      name = name.padEnd(name.length + (20 - (name.length + timeUntil.length)));
+      name = name.padEnd(name.length + (18 - (name.length + timeUntil.length)));
     }
 
     scheduleList += `${name} ${timeUntil} until ${
-      b.name === "Vell" ? "30m warning  " : "spawn        "
+      b.name === "Vell" ? "30m warning " : "spawn        "
     }\n`;
   });
 
@@ -90,7 +90,7 @@ async function timersMessage(client) {
       const timeUntil = parseTimeUntil(windowOpen);
       if (name.length < 17) {
         name = name.padEnd(
-          name.length + (20 - (name.length + timeUntil.length))
+          name.length + (18 - (name.length + timeUntil.length))
         );
       }
 
@@ -99,7 +99,7 @@ async function timersMessage(client) {
       const timeUntil = parseTimeUntil(windowClose);
       if (name.length < 17) {
         name = name.padEnd(
-          name.length + (20 - (name.length + timeUntil.length))
+          name.length + (18 - (name.length + timeUntil.length))
         );
       }
 
@@ -108,11 +108,11 @@ async function timersMessage(client) {
       const timeUntil = parseElapsed(windowClose);
       if (name.length < 17) {
         name = name.padEnd(
-          name.length + (20 - (name.length + timeUntil.length))
+          name.length + (18 - (name.length + timeUntil.length))
         );
       }
 
-      inWindowList += `${name} ${timeUntil} late\n`;
+      inWindowList += `${name} ${timeUntil} late               \n`;
     }
   });
 

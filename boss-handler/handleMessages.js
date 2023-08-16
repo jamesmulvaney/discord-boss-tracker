@@ -182,7 +182,7 @@ async function checkMessage(message) {
   );
 
   //Set the bosses health, resend the chart, then delete the previous one.
-  boss.setHealth(matchedChannel, matchedHealth[0], message);
+  boss.setHealth(matchedChannel, matchedHealth[0].replace("%", ""), message);
   boss.statusHandler();
   setTimeout(() => {
     const toDelete = boss.botMessages.shift();

@@ -31,7 +31,6 @@ async function updateIsMaintenance(isMaintenance, maintEnd) {
         ],
       },
       data: {
-        isMaintenance,
         windowStart,
         windowEnd,
       },

@@ -31,7 +31,9 @@ function clearBoss(msg, args) {
               .utc()
               .format("YYYY-MM-DDTHH:mm:ss")} UTC\` <#${
               msg.channel.id
-            }> \`${bossName}-Cleared\` <@${msg.author.id}>`,
+            }> \`${bossName}-Cleared\` <@${msg.author.id}> \`${
+              message.content
+            }\``,
           });
         });
 
