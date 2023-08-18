@@ -10,7 +10,6 @@ dayjs.extend(utc);
 dayjs.extend(duration);
 
 async function timersMessage(client) {
-  console.time("Timers Message");
   const schedule = await getBossSchedule();
   const config = await checkMaintenanceMode();
   const fieldBosses = await getFieldBossList();
@@ -171,8 +170,6 @@ async function timersMessage(client) {
     .then((message) => {
       messageId.push(message);
     });
-
-  console.timeEnd("Timers Message");
 
   setTimeout(() => {
     timersMessage(client);

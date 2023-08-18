@@ -105,8 +105,6 @@ async function callBoss(msg, args) {
         return;
       }
     }
-
-    console.log(`[TEST] ${boss.name}`);
   }
 }
 
