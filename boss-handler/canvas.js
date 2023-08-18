@@ -5,9 +5,9 @@ const { staticChannelList } = require("../queries/getChannelList");
 
 //Generate a blank chart on bot startup
 async function getFieldBossChart() {
-  const channels = await staticChannelList;
+  const channelList = await staticChannelList;
 
-  const canvas = createCanvas(468, 165);
+  const canvas = createCanvas((channelList.length / 6) * 64 + 20, 165);
   const ctx = canvas.getContext("2d");
 
   //Background Rectangle
@@ -31,13 +31,17 @@ async function getFieldBossChart() {
   ctx.fillStyle = "#ffffff";
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
-  ctx.fillText(channels[0].name.slice(0, 3).toLocaleUpperCase(), 48, 10);
-  ctx.fillText(channels[6].name.slice(0, 3).toLocaleUpperCase(), 114, 10);
-  ctx.fillText(channels[12].name.slice(0, 3).toLocaleUpperCase(), 178, 10);
-  ctx.fillText(channels[18].name.slice(0, 3).toLocaleUpperCase(), 242, 10);
-  ctx.fillText(channels[24].name.slice(0, 3).toLocaleUpperCase(), 308, 10);
-  ctx.fillText(channels[32].name.slice(0, 3).toLocaleUpperCase(), 370, 10);
-  ctx.fillText(channels[40].name.slice(0, 3).toLocaleUpperCase(), 434, 10);
+
+  //Support for if they add more channels in the future
+  let channelPos = 0;
+  for (let i = 0; i <= channelList.length - 1; i = i + 6) {
+    ctx.fillText(
+      channelList[i].name.slice(0, 3).toLocaleUpperCase(),
+      48 + 64 * channelPos,
+      10
+    );
+    channelPos++;
+  }
 
   return canvas.toBuffer();
 }
@@ -51,6 +55,7 @@ const fieldBossChart = getFieldBossChart();
   Orange >= 50 && < 25
   Red >= 25 && < 0
   Grey = 0
+  Dark Grey = Did not spawn
 */
 function getFillColor(health, timeInSeconds) {
   const healthAsInt = parseInt(health);
@@ -89,7 +94,7 @@ function getFillColor(health, timeInSeconds) {
   World boss and field boss have different charts
 */
 async function createChart(boss) {
-  if (boss.isWorldBoss) {
+  if (boss.bossInfo.isWorldBoss) {
     //World Boss Chart
     const canvas = createCanvas(65, 45);
     const ctx = canvas.getContext("2d");
@@ -117,11 +122,12 @@ async function createChart(boss) {
     ctx.fillText(`${formattedTime}`, 61, 36);
 
     return new AttachmentBuilder(canvas.toBuffer(), {
-      name: `${boss.name}.png`,
+      name: `${boss.bossInfo.name}.png`,
     });
   } else {
     //Field Boss Chart
-    const canvas = createCanvas(468, 165);
+    const channelList = await staticChannelList;
+    const canvas = createCanvas((channelList.length / 6) * 64 + 20, 165);
     const ctx = canvas.getContext("2d");
     const bg = await loadImage(await fieldBossChart);
 
@@ -129,11 +135,11 @@ async function createChart(boss) {
 
     let col = 0;
     let row = 0;
-    boss.status.forEach((b) => {
+    for (let status of boss.status) {
       const xPos = 20 + 64 * col;
       const yPos = 20 + (20 * row + 5 * row);
 
-      if (b.channel.isArsha) {
+      if (status.channel.isArsha) {
         ctx.fillStyle = "#3d3e40";
         ctx.fillRect(xPos, yPos, 60, 20);
         ctx.font = "normal 12px Roboto";
@@ -141,22 +147,22 @@ async function createChart(boss) {
         ctx.textAlign = "start";
         ctx.fillText(`DNS`, xPos + 1, yPos + 14);
       } else {
-        const [timeInSeconds, formattedTime] = parseCanvasTime(b.updated);
+        const [timeInSeconds, formattedTime] = parseCanvasTime(status.updated);
 
-        ctx.fillStyle = getFillColor(b.currentHealth, timeInSeconds);
+        ctx.fillStyle = getFillColor(status.currentHealth, timeInSeconds);
         ctx.fillRect(xPos, yPos, 60, 20);
         ctx.font = "normal 12px Roboto";
         ctx.fillStyle = "#000000";
         ctx.textAlign = "start";
         if (
-          b.currentHealth === "??" ||
-          b.currentHealth === "Desp" ||
-          b.currentHealth === "Dead" ||
-          b.currentHealth === "DNS"
+          status.currentHealth === "??" ||
+          status.currentHealth === "Desp" ||
+          status.currentHealth === "Dead" ||
+          status.currentHealth === "DNS"
         ) {
-          ctx.fillText(`${b.currentHealth}`, xPos + 1, yPos + 14);
+          ctx.fillText(`${status.currentHealth}`, xPos + 1, yPos + 14);
         } else {
-          ctx.fillText(`${b.currentHealth}%`, xPos + 1, yPos + 14);
+          ctx.fillText(`${status.currentHealth}%`, xPos + 1, yPos + 14);
         }
         ctx.textAlign = "end";
         ctx.fillText(`${formattedTime}`, xPos + 59, yPos + 14);
@@ -169,10 +175,10 @@ async function createChart(boss) {
       } else {
         row++;
       }
-    });
+    }
 
     return new AttachmentBuilder(canvas.toBuffer(), {
-      name: `${boss.name}.png`,
+      name: `${boss.bossInfo.name}.png`,
     });
   }
 }

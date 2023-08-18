@@ -49,40 +49,40 @@ async function timersMessage(client) {
   }
 
   //Sort active bosses
-  activeBosses.forEach((ab) => {
-    const uptime = parseElapsed(ab.startTime);
-    let name = ab.shortName;
+  for (let activeBoss of activeBosses) {
+    const uptime = parseElapsed(activeBoss.startTime);
+    let name = activeBoss.bossInfo.shortName;
 
     if (name.length < 17) {
       name = name.padEnd(name.length + (18 - (name.length + uptime.length)));
     }
 
     activeList += `${name} ${uptime} elapsed            \n`;
-  });
+  }
 
   //Sort schedule
-  schedule.forEach((b) => {
-    if (!b.nextSpawn || activeList.includes(b.shortName)) return;
+  for (let boss of schedule) {
+    if (!boss.nextSpawn || activeList.includes(boss.shortName)) continue;
 
-    const timeUntil = parseTimeUntil(b.nextSpawn);
-    let name = b.shortName;
+    const timeUntil = parseTimeUntil(boss.nextSpawn);
+    let name = boss.shortName;
 
     if (name.length < 17) {
       name = name.padEnd(name.length + (18 - (name.length + timeUntil.length)));
     }
 
     scheduleList += `${name} ${timeUntil} until ${
-      b.name === "Vell" ? "30m warning " : "spawn        "
+      boss.name === "Vell" ? "30m warning " : "spawn        "
     }\n`;
-  });
+  }
 
   //Sort field boss windows
-  fieldBosses.forEach((fb) => {
-    if (!fb.clearTime || activeList.includes(fb.shortName)) return;
+  for (let boss of fieldBosses) {
+    if (!boss.clearTime || activeList.includes(boss.shortName)) continue;
 
-    let name = fb.shortName;
-    const windowOpen = dayjs(fb.windowStart).utc();
-    const windowClose = dayjs(fb.windowEnd).utc();
+    let name = boss.shortName;
+    const windowOpen = dayjs(boss.windowStart).utc();
+    const windowClose = dayjs(boss.windowEnd).utc();
     const now = dayjs().utc();
 
     //Not in window
@@ -114,7 +114,7 @@ async function timersMessage(client) {
 
       inWindowList += `${name} ${timeUntil} late               \n`;
     }
-  });
+  }
 
   const maintEmbed = {
     color: 0xda8b3c,

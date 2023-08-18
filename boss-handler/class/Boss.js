@@ -14,38 +14,20 @@ class Boss {
   refreshTime = [];
 
   constructor(
-    id,
-    name,
-    shortName,
-    aliases,
-    info,
-    avatar,
+    bossInfo,
     lastSpawn,
-    isWorldBoss,
     status,
     isActive,
     calledBy,
-    forceDespawnTime,
-    forceClearTime,
-    windowCooldown,
     client,
     isSilent,
     isRevived
   ) {
-    this.id = id;
-    this.name = name;
-    this.shortName = shortName;
-    this.aliases = aliases;
-    this.info = info;
-    this.avatar = avatar;
+    this.bossInfo = bossInfo;
     this.lastSpawn = lastSpawn;
-    this.isWorldBoss = isWorldBoss;
     this.status = status;
     this.isActive = isActive;
     this.calledBy = calledBy;
-    this.forceDespawnTime = forceDespawnTime;
-    this.forceClearTime = forceClearTime;
-    this.windowCooldown = windowCooldown;
     this.client = client;
     this.startTime = dayjs(lastSpawn);
     this.isSilent = isSilent;
@@ -54,8 +36,8 @@ class Boss {
 
     console.log(
       `[${dayjs().utc().format("HH:mm:ss")}][LOG] ${
-        calledBy.tag ? calledBy.tag : "SERVER"
-      } has called up ${name}.`
+        this.calledBy.tag ? this.calledBy.tag : "SERVER"
+      } has called up ${this.bossInfo.name}.`
     );
 
     this.statusHandler();
@@ -65,15 +47,18 @@ class Boss {
       this.sendNotif();
     }
 
-    if (!isRevived) {
+    if (!this.isRevived) {
       //Update lastSpawn in the database
-      updateSpawnTime(this.id, this.startTime.format());
+      updateSpawnTime(this.bossInfo.id, this.startTime.format());
 
       //Start forceClear cron task
-      const clearTime = this.startTime.add(this.forceClearTime, "minutes");
+      const clearTime = this.startTime.add(
+        this.bossInfo.forceClearTime,
+        "minutes"
+      );
       console.log(
         `[${dayjs().utc().format("HH:mm:ss")}][LOG] ${
-          this.shortName
+          this.bossInfo.shortName
         } auto-clear time set to ${clearTime.format("HH:mm:ss")}`
       );
       this.forceClearTask = cron.schedule(
@@ -84,12 +69,12 @@ class Boss {
 
           console.log(
             `[${dayjs().utc().format("HH:mm:ss")}][LOG] ${
-              this.shortName
+              this.bossInfo.shortName
             } auto-cleared.`
           );
 
           for (let i = 0; i < activeBosses.length; i++) {
-            if (activeBosses[i].id === this.id) {
+            if (activeBosses[i].bossInfo.id === this.bossInfo.id) {
               activeBosses.splice(i, 1);
               break;
             }
@@ -106,7 +91,7 @@ class Boss {
       if (!this.isRevived) this.forceClearTask.stop();
       //clearTimeout(this.refreshTime.shift());
       for (let i = 0; i < activeBosses.length; i++) {
-        if (activeBosses[i].id === this.id) {
+        if (activeBosses[i].bossInfo.id === this.bossInfo.id) {
           activeBosses.splice(i, 1);
           break;
         }
@@ -129,11 +114,13 @@ class Boss {
       .send({
         content: dayjs
           .utc()
-          .isAfter(this.startTime.add(this.forceDespawnTime, "minutes"))
+          .isAfter(
+            this.startTime.add(this.bossInfo.forceDespawnTime, "minutes")
+          )
           ? ":warning: This boss is past it's forced despawn time. :warning:"
-          : this.info,
-        username: `${this.name} - ${uptime} elapsed`,
-        avatarURL: this.avatar,
+          : this.bossInfo.info,
+        username: `${this.bossInfo.name} - ${uptime} elapsed`,
+        avatarURL: this.bossInfo.avatar,
         files: [chart],
       })
       .then((message) => {
@@ -141,13 +128,16 @@ class Boss {
       });
 
     //Refresh chart if message has not been send within 60 seconds
-    const refreshRef = setTimeout(() => {
-      this.statusHandler();
-      setTimeout(() => {
-        if (!this.isActive) return;
-        this.deleteLastMessage();
-      }, 1000);
-    }, 59450);
+    const refreshRef = setTimeout(
+      () => {
+        this.statusHandler();
+        setTimeout(() => {
+          if (!this.isActive) return;
+          this.deleteLastMessage();
+        }, 1000);
+      },
+      this.bossInfo.isWorldBoss ? 59550 : 59450
+    );
 
     this.refreshTime.push(refreshRef);
   }
@@ -160,20 +150,11 @@ class Boss {
     );
 
     await notifHook.send({
-      content: `${this.name} has spawned. Status in <#${
+      content: `${this.bossInfo.name} has spawned. Status in <#${
         process.env.STATUS_CHANNEL_ID
       }> @everyone \`${dayjs().utc().format("YYYY/MM/DD HH:mm:ss")} UTC\``,
-      username: `${this.name}`,
-      avatarURL: this.avatar,
-    });
-
-    //Send log to #logs
-    this.client.channels.fetch(process.env.LOG_CHANNEL_ID).then((c) => {
-      c.send({
-        content: `\`${dayjs().utc().format("YYYY-MM-DDTHH:mm:ss")} UTC\` <#${
-          process.env.STATUS_CHANNEL_ID
-        }> \`${this.shortName}-Spawned\` <@${this.calledBy.id}>`,
-      });
+      username: `${this.bossInfo.name}`,
+      avatarURL: this.bossInfo.avatar,
     });
   }
 
@@ -183,7 +164,7 @@ class Boss {
     let channelTag = "ALL";
     let hp = health;
 
-    if (this.isWorldBoss) {
+    if (this.bossInfo.isWorldBoss) {
       if (health === "undo") {
         this.status[0].currentHealth = this.status[0].previousHealth;
         hp = this.status[0].currentHealth;
@@ -240,14 +221,14 @@ class Boss {
       c.send({
         content: `\`${dayjs().utc().format("YYYY-MM-DDTHH:mm:ss")} UTC\` <#${
           process.env.STATUS_CHANNEL_ID
-        }> \`${channelTag}-${this.shortName}-${hp}-${type}\` <@${
+        }> \`${channelTag}-${this.bossInfo.shortName}-${hp}-${type}\` <@${
           message.author.id
         }> \`${message.content}\``,
       })
     );
 
     //Update the boss health in the database
-    updateStatus(this.id, this.status);
+    updateStatus(this.bossInfo.id, this.status);
   }
 
   getHealthType(currentHealth, previousHealth) {
@@ -336,10 +317,12 @@ class Boss {
     if (type === "manual") {
       embed = {
         color: 0x8a0000,
-        title: `${this.name} all clear after ${parseUptime(this.startTime)}`,
+        title: `${this.bossInfo.name} all clear after ${parseUptime(
+          this.startTime
+        )}`,
         fields: embedFields,
         thumbnail: {
-          url: `${this.avatar}`,
+          url: `${this.bossInfo.avatar}`,
         },
         footer: {
           text: "This boss was cleared by a moderator. @mention them if the boss if still alive on your channel.",
@@ -348,13 +331,13 @@ class Boss {
     } else if (type === "force") {
       embed = {
         color: 0x8a0000,
-        title: `${this.name} all clear after ${parseForceDespawnTime(
+        title: `${this.bossInfo.name} all clear after ${parseForceDespawnTime(
           this.startTime,
-          this.forceDespawnTime
+          this.bossInfo.forceDespawnTime
         )}, adjusted to initial despawn`,
         fields: embedFields,
         thumbnail: {
-          url: `${this.avatar}`,
+          url: `${this.bossInfo.avatar}`,
         },
         footer: {
           text: "This boss reached it's auto-clear time. @mention a mod if it is still alive.",
@@ -363,12 +346,12 @@ class Boss {
     } else {
       embed = {
         color: 0x8a0000,
-        title: `${this.shortName} all clear after ${parseUptime(
+        title: `${this.bossInfo.shortName} all clear after ${parseUptime(
           this.startTime
         )}s`,
         fields: embedFields,
         thumbnail: {
-          url: `${this.avatar}`,
+          url: `${this.bossInfo.avatar}`,
         },
       };
     }
@@ -412,14 +395,16 @@ class Boss {
       color: 0x8a0000,
       title:
         type === "force"
-          ? `${this.name} all clear after ${parseForceDespawnTime(
+          ? `${this.bossInfo.name} all clear after ${parseForceDespawnTime(
               this.startTime,
-              this.forceDespawnTime
+              this.bossInfo.forceDespawnTime
             )}, adjusted to initial despawn`
-          : `${this.name} all clear after ${parseUptime(this.startTime)}`,
+          : `${this.bossInfo.name} all clear after ${parseUptime(
+              this.startTime
+            )}`,
       fields: embedField,
       thumbnail: {
-        url: `${this.avatar}`,
+        url: `${this.bossInfo.avatar}`,
       },
       footer:
         type === "force"
@@ -429,7 +414,7 @@ class Boss {
           : undefined,
     };
 
-    if (this.isWorldBoss) {
+    if (this.bossInfo.isWorldBoss) {
       //Killed or desp
       if (type === "Dead") {
         embedField.push({
@@ -459,24 +444,26 @@ class Boss {
       .catch((err) => console.error(err));
 
     //Update clear time
-    if (!this.isWorldBoss && this.windowCooldown !== 0) {
+    if (!this.bossInfo.isWorldBoss && this.bossInfo.windowCooldown !== 0) {
       //If auto-cleared, adjust to actual despawn time. Same with manual clear after despawn time.
       if (
         type === "force" ||
         (type === "manual" &&
           dayjs()
             .utc()
-            .isAfter(this.startTime.add(this.forceDespawnTime, "minutes")))
+            .isAfter(
+              this.startTime.add(this.bossInfo.forceDespawnTime, "minutes")
+            ))
       ) {
         await updateClearTime(
-          this.shortName,
-          this.windowCooldown,
-          this.startTime.add(this.forceDespawnTime, "minutes")
+          this.bossInfo.shortName,
+          this.bossInfo.windowCooldown,
+          this.startTime.add(this.bossInfo.forceDespawnTime, "minutes")
         );
       } else {
         await updateClearTime(
-          this.shortName,
-          this.windowCooldown,
+          this.bossInfo.shortName,
+          this.bossInfo.windowCooldown,
           dayjs().utc()
         );
       }
@@ -487,11 +474,11 @@ class Boss {
 
   //Change to uber
   changeToUber(uberInfo, calledBy) {
-    this.name = uberInfo.name;
-    this.shortName = uberInfo.shortName;
-    this.aliases += `|${uberInfo.aliases}`;
-    this.info = uberInfo.info;
-    this.avatar = uberInfo.avatar;
+    this.bossInfo.name = uberInfo.name;
+    this.bossInfo.shortName = uberInfo.shortName;
+    this.bossInfo.aliases += `|${uberInfo.aliases}`;
+    this.bossInfo.info = uberInfo.info;
+    this.bossInfo.avatar = uberInfo.avatar;
     this.calledBy = calledBy;
 
     this.statusHandler();

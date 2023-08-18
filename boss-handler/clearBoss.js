@@ -8,12 +8,12 @@ function clearBoss(msg, args) {
 
   //Loop through the current active bosses to find the user specified boss.
   for (let i = 0; i < activeBosses.length; i++) {
-    const bossRegex = RegExp(`${activeBosses[i].aliases}`);
+    const bossRegex = RegExp(`${activeBosses[i].bossInfo.aliases}`);
 
     if (bossRegex.test(alias)) {
       //Clear the boss if it is a field boss.
-      if (!activeBosses[i].isWorldBoss) {
-        const bossName = activeBosses[i].shortName;
+      if (!activeBosses[i].bossInfo.isWorldBoss) {
+        const bossName = activeBosses[i].bossInfo.shortName;
         msg.reply({ content: `${bossName} cleared` });
         if (activeBosses[i].forceClearTask)
           activeBosses[i].forceClearTask.stop();
@@ -31,9 +31,7 @@ function clearBoss(msg, args) {
               .utc()
               .format("YYYY-MM-DDTHH:mm:ss")} UTC\` <#${
               msg.channel.id
-            }> \`${bossName}-Cleared\` <@${msg.author.id}> \`${
-              message.content
-            }\``,
+            }> \`${bossName}-Cleared\` <@${msg.author.id}>`,
           });
         });
 
