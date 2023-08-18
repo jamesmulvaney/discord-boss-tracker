@@ -1,4 +1,3 @@
-const { getBossSchedule } = require("../queries/getBossSchedule");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const cron = require("node-cron");
@@ -29,14 +28,15 @@ async function scheduleNotification(client) {
 
   //Schedule a reminder in boss-notifications
   if (!dayjs().utc().isAfter(reminderAt)) {
-    nextBoss.forEach((b) => {
+    for (let boss of nextBoss) {
       console.log(
-        `[LOG] Scheduled reminder for ${b.shortName} at ${reminderAt.format(
+        `[LOG] Scheduled reminder for ${boss.shortName} at ${reminderAt.format(
           "YYYY/MM/DD HH:mm:ss"
         )} UTC`
       );
-    });
+    }
 
+    //Cron for reminder
     cron.schedule(
       `${reminderAt.second()} ${reminderAt.minute()} ${reminderAt.hour()} ${reminderAt.date()} ${
         reminderAt.month() + 1
@@ -47,25 +47,26 @@ async function scheduleNotification(client) {
           process.env.NOTIF_HOOK_TOKEN
         );
 
-        nextBoss.forEach(async (b) => {
+        //Send multiple reminders if there's two bosses at once
+        for (let boss of nextBoss) {
           await notifHook.send({
             content: `${
-              b.shortName
+              boss.shortName
             } spawns in ~${reminderTime} minutes. Status in <#${
               process.env.STATUS_CHANNEL_ID
             }> @everyone \`${dayjs()
               .utc()
               .format("YYYY/MM/DD HH:mm:ss")} UTC\``,
-            username: `${b.name}`,
-            avatarURL: b.avatar,
+            username: `${boss.name}`,
+            avatarURL: boss.avatar,
           });
 
           console.log(
-            `[LOG] Reminder for ${b.name} sent at ${reminderAt.format(
+            `[LOG] Reminder for ${boss.name} sent at ${reminderAt.format(
               "YYYY/MM/DD HH:mm:ss"
             )} UTC`
           );
-        });
+        }
       },
       {
         timezone: "Etc/UTC",
@@ -82,36 +83,28 @@ async function scheduleNotification(client) {
       async () => {
         const guild = await client.guilds.fetch(process.env.GUILD_ID);
         const botAuthor = await guild.members.fetch(process.env.BOT_AUTHOR_ID);
-        nextBoss.forEach(async (b) => {
+
+        for (let boss of nextBoss) {
           let freshStatus;
-          if (!b.isWorldBoss) {
+          if (!boss.isWorldBoss) {
             freshStatus = await getFreshFieldStatus();
-            setFreshStatus(b.name, freshStatus);
+            setFreshStatus(boss.name, freshStatus);
           } else {
             freshStatus = getFreshWorldStatus();
-            setFreshStatus(b.name, freshStatus);
+            setFreshStatus(boss.name, freshStatus);
           }
           const newBoss = new Boss(
-            b.id,
-            b.name,
-            b.shortName,
-            b.aliases,
-            b.info,
-            b.avatar,
+            boss,
             dayjs().utc().format(),
-            b.isWorldBoss,
             freshStatus,
             true,
             botAuthor,
-            b.forceDespawnTime,
-            b.forceClearTime,
-            b.windowCooldown,
             client,
             true,
             false
           );
           activeBosses.push(newBoss);
-        });
+        }
 
         setTimeout(async () => {
           scheduleNotification(client);

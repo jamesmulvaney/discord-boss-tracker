@@ -16,86 +16,71 @@ async function callBoss(msg, args) {
   const bossList = await staticBossList;
 
   //Loop through bosses
-  for (let b of bossList) {
-    const bossRegex = RegExp(`${b.aliases}`);
+  for (let boss of bossList) {
+    const bossRegex = RegExp(`${boss.aliases}`);
 
     //Test if alias provided by user matches any of the bosses alias
     if (bossRegex.test(alias)) {
       let isActive = false;
 
       //Check if boss is already active
-      activeBosses.forEach((ab) => {
-        if (ab.id === b.id) {
+      for (let activeBoss of activeBosses) {
+        if (activeBoss.id === boss.id) {
           isActive = true;
-          return;
+          break;
         }
-      });
+      }
 
       if (!isActive) {
         //Fresh status array
         let freshStatus;
-        if (!b.isWorldBoss) {
+        if (!boss.isWorldBoss) {
           freshStatus = await getFreshFieldStatus();
-          setFreshStatus(b.name, freshStatus);
+          setFreshStatus(boss.name, freshStatus);
         } else {
           freshStatus = getFreshWorldStatus();
-          setFreshStatus(b.name, freshStatus);
+          setFreshStatus(boss.name, freshStatus);
         }
 
         let newBoss;
 
         //Check if uber
-        if (b.isUber) {
+        if (boss.isUber) {
           //Check if original is active
-          let originalActive = false;
-          activeBosses.forEach((ab) => {
-            if (ab.id === b.uberOf) {
-              ab.changeToUber(b, msg.author);
+          for (let activeBoss of activeBosses) {
+            if (activeBoss.id === boss.uberOf) {
+              activeBoss.changeToUber(boss, msg.author);
               originalActive = true;
+              break;
             }
-          });
+          }
 
           if (originalActive) {
             return;
           }
 
-          const original = await getUberPartner(b.uberOf);
-
+          const original = await getUberPartner(boss.uberOf);
           newBoss = new Boss(
-            original.id,
-            b.name,
-            b.shortName,
-            `${original.aliases}|${b.aliases}`,
-            b.info,
-            b.avatar,
+            {
+              id: original.id,
+              aliases: `${original.aliases}|${boss.aliases}`,
+              ...boss,
+            },
             dayjs().utc().format(),
-            b.isWorldBoss,
             freshStatus,
             true,
             msg.author,
-            b.forceDespawnTime,
-            b.forceClearTime,
-            b.windowCooldown,
             msg.client,
             false,
             false
           );
         } else {
           newBoss = new Boss(
-            b.id,
-            b.name,
-            b.shortName,
-            b.aliases,
-            b.info,
-            b.avatar,
+            boss,
             dayjs().utc().format(),
-            b.isWorldBoss,
             freshStatus,
             true,
             msg.author,
-            b.forceDespawnTime,
-            b.forceClearTime,
-            b.windowCooldown,
             msg.client,
             false,
             false
@@ -103,9 +88,25 @@ async function callBoss(msg, args) {
         }
 
         activeBosses.push(newBoss);
+
+        //Send log to #logs
+        msg.client.channels.fetch(process.env.LOG_CHANNEL_ID).then((c) => {
+          c.send({
+            content: `\`${dayjs()
+              .utc()
+              .format("YYYY-MM-DDTHH:mm:ss")} UTC\` <#${
+              process.env.STATUS_CHANNEL_ID
+            }> \`${boss.shortName}-Spawned\` <@${msg.author.id}> \`${
+              msg.content
+            }\``,
+          });
+        });
+
         return;
       }
     }
+
+    console.log(`[TEST] ${boss.name}`);
   }
 }
 

@@ -17,42 +17,33 @@ async function checkMessage(message) {
     const bossList = await getBossList();
 
     //Find boss from alias provided by user
-    for (let b of bossList) {
-      const bossRegex = RegExp(`${b.aliases}`);
+    for (let boss of bossList) {
+      const bossRegex = RegExp(`${boss.aliases}`);
 
       if (bossRegex.test(message.content)) {
         let alreadyUp = false;
 
         //If the boss is already up, ingnore the call
-        activeBosses.forEach((ab) => {
-          if (ab.name === b.name) {
+        for (let activeBoss of activeBosses) {
+          if (activeBoss.bossInfo.name === boss.name) {
             alreadyUp = true;
-            return;
+            break;
           }
-        });
+        }
 
         if (!alreadyUp) {
           //Create boss object with the old health status, but do not send a new notification
-          const oldBoss = new Boss(
-            b.id,
-            b.name,
-            b.shortName,
-            b.aliases,
-            b.info,
-            b.avatar,
-            b.lastSpawn,
-            b.isWorldBoss,
-            b.status,
+          const revivedBoss = new Boss(
+            boss,
+            boss.lastSpawn,
+            boss.status,
             true,
             message.author,
-            b.forceDespawnTime,
-            b.forceClearTime,
-            b.windowCooldown,
             message.client,
             true,
             true
           );
-          activeBosses.push(oldBoss);
+          activeBosses.push(revivedBoss);
 
           //Send log to #logs
           message.client.channels
@@ -63,7 +54,7 @@ async function checkMessage(message) {
                   .utc()
                   .format("YYYY-MM-DDTHH:mm:ss")} UTC\` <#${
                   process.env.STATUS_CHANNEL_ID
-                }> \`${b.shortName}-Revived\` <@${message.author.id}> \`${
+                }> \`${boss.shortName}-Revived\` <@${message.author.id}> \`${
                   message.content
                 }\``,
               });
@@ -84,22 +75,23 @@ async function checkMessage(message) {
   if (ignoreRegexp.test(message.content) || activeBosses.length === 0) return;
 
   //Check for boss alias
-  let boss;
+  let matchedBoss;
   if (activeBosses.length > 1) {
-    for (let b of activeBosses) {
-      const aliasRegexp = new RegExp(`${b.aliases}`);
+    for (let boss of activeBosses) {
+      const aliasRegexp = new RegExp(`${boss.bossInfo.aliases}`);
 
       if (aliasRegexp.test(message.content)) {
-        boss = b;
+        matchedBoss = boss;
+        aliasRegexp.exec(message.content);
         break;
       }
     }
   } else if (activeBosses.length === 1) {
-    boss = activeBosses[0];
+    matchedBoss = activeBosses[0];
   }
 
   //If more than one boss is active but no alias is provided
-  if (!boss) {
+  if (!matchedBoss) {
     message
       .reply({
         content:
@@ -113,18 +105,19 @@ async function checkMessage(message) {
 
   //Check for channel alias if the boss is a field boss
   let matchedChannel;
-  if (!boss.isWorldBoss) {
-    boss.status.forEach(({ channel }) => {
+  if (!matchedBoss.bossInfo.isWorldBoss) {
+    for (channel of matchedBoss.status) {
       const channelRegexp = new RegExp(`${channel.aliases}`);
       if (channelRegexp.test(message.content)) {
         if (!channel.isArsha) {
           matchedChannel = channel.name;
-          return;
+          channelRegexp.exec(message.content);
+          break;
         }
 
-        return;
+        break;
       }
-    });
+    }
 
     //Remind user to specify a channel when calling field boss status
     if (!matchedChannel) {
@@ -166,7 +159,7 @@ async function checkMessage(message) {
   } else if (undoRegexp.test(message.content)) {
     matchedHealth = ["undo"];
   } else if (dnsRegexp.test(message.content)) {
-    if (boss.isWorldBoss) return false;
+    if (matchedBoss.bossInfo.isWorldBoss) return false;
     matchedHealth = ["DNS"];
   } else {
     //Ingore
@@ -176,17 +169,21 @@ async function checkMessage(message) {
   console.log(
     `[${dayjs().utc().format("HH:mm:ss")}][LOG] @${
       message.author.tag
-    } successful call. Boss: '${boss.shortName}'${
+    } successful call. Boss: '${matchedBoss.bossInfo.shortName}'${
       matchedChannel ? ` Channel: '${matchedChannel}' ` : " "
     }Health: '${matchedHealth[0]}' Message: '${message.content}'`
   );
 
   //Set the bosses health, resend the chart, then delete the previous one.
-  boss.setHealth(matchedChannel, matchedHealth[0].replace("%", ""), message);
-  boss.statusHandler();
+  matchedBoss.setHealth(
+    matchedChannel,
+    matchedHealth[0].replace("%", ""),
+    message
+  );
+  matchedBoss.statusHandler();
   setTimeout(() => {
-    const toDelete = boss.botMessages.shift();
-    const toClear = boss.refreshTime.shift();
+    const toDelete = matchedBoss.botMessages.shift();
+    const toClear = matchedBoss.refreshTime.shift();
     toDelete.delete();
     clearTimeout(toClear);
   }, 1000);

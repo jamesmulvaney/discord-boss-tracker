@@ -20,7 +20,7 @@ module.exports = {
             //Toggle Chart
             const toggleType = boss.toggleChart();
             msg.reply({
-              content: `${boss.shortName}'s chart has been ${
+              content: `${boss.bossInfo.shortName}'s chart has been ${
                 toggleType ? "hidden" : "unhidden"
               }.`,
             });
@@ -32,7 +32,7 @@ module.exports = {
                   .utc()
                   .format("YYYY-MM-DDTHH:mm:ss")} UTC\` <#${
                   msg.channel.id
-                }> \`${boss.shortName}-${
+                }> \`${boss.bossInfo.shortName}-${
                   toggleType ? "Hidden" : "Unhidden"
                 }\` <@${msg.author.id}>`,
               });
@@ -40,7 +40,7 @@ module.exports = {
 
             console.log(
               `[${dayjs().utc().format("HH:mm:ss")}][LOG] ${
-                boss.shortName
+                boss.bossInfo.shortName
               } chart ${toggleType ? "hidden" : "unhidden"} by ${
                 msg.author.tag
               }`
