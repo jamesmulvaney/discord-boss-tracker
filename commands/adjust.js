@@ -5,7 +5,8 @@ dayjs.extend(utc);
 
 module.exports = {
   name: "adjust",
-  description: "Update boss clear time",
+  description:
+    "Adjust a bosses clear time and window timer. Syntax: `!adjust <bossShortName> <killTime>`",
   guildOnly: true,
   async execute(msg, args) {
     if (msg.channelId === process.env.MOD_CHANNEL_ID) {

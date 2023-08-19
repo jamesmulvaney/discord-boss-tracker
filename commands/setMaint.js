@@ -6,7 +6,7 @@ dayjs.extend(utc);
 
 module.exports = {
   name: "setmaint",
-  description: "Set maintenance time",
+  description: "Set maintenance time. Syntax: `!setmaint <startTime> <length>`",
   guildOnly: true,
   async execute(msg, args) {
     if (msg.channelId === process.env.MOD_CHANNEL_ID) {

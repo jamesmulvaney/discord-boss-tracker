@@ -5,7 +5,8 @@ dayjs.extend(utc);
 
 module.exports = {
   name: "togglechart",
-  description: "Used to hide or unhide a boss chart.",
+  description:
+    "Hide or unhide a boss chart. Syntax: `!togglechart <bossAlias>`",
   guildOnly: true,
   execute(msg, args) {
     if (msg.channelId === process.env.MOD_CHANNEL_ID) {
