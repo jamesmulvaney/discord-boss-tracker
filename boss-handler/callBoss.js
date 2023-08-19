@@ -16,7 +16,7 @@ async function callBoss(msg, args) {
   const bossList = await staticBossList;
 
   //Loop through bosses
-  for (let boss of bossList) {
+  for (const boss of bossList) {
     const bossRegex = RegExp(`${boss.aliases}`);
 
     //Test if alias provided by user matches any of the bosses alias
@@ -24,8 +24,8 @@ async function callBoss(msg, args) {
       let isActive = false;
 
       //Check if boss is already active
-      for (let activeBoss of activeBosses) {
-        if (activeBoss.id === boss.id) {
+      for (const activeBoss of activeBosses) {
+        if (activeBoss.bossInfo.id === boss.id) {
           isActive = true;
           break;
         }
@@ -47,16 +47,27 @@ async function callBoss(msg, args) {
         //Check if uber
         if (boss.isUber) {
           //Check if original is active
-          for (let activeBoss of activeBosses) {
-            if (activeBoss.id === boss.uberOf) {
+          for (const activeBoss of activeBosses) {
+            if (activeBoss.bossInfo.id === boss.uberOf) {
               activeBoss.changeToUber(boss, msg.author);
-              originalActive = true;
-              break;
-            }
-          }
 
-          if (originalActive) {
-            return;
+              //Send log to #logs
+              msg.client.channels
+                .fetch(process.env.LOG_CHANNEL_ID)
+                .then((c) => {
+                  c.send({
+                    content: `\`${dayjs()
+                      .utc()
+                      .format("YYYY-MM-DDTHH:mm:ss")} UTC\` <#${
+                      process.env.STATUS_CHANNEL_ID
+                    }> \`${boss.shortName}-Spawned\` <@${msg.author.id}> \`${
+                      msg.content
+                    }\``,
+                  });
+                });
+
+              return;
+            }
           }
 
           const original = await getUberPartner(boss.uberOf);

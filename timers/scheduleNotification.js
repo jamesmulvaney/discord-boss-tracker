@@ -28,7 +28,7 @@ async function scheduleNotification(client) {
 
   //Schedule a reminder in boss-notifications
   if (!dayjs().utc().isAfter(reminderAt)) {
-    for (let boss of nextBoss) {
+    for (const boss of nextBoss) {
       console.log(
         `[LOG] Scheduled reminder for ${boss.shortName} at ${reminderAt.format(
           "YYYY/MM/DD HH:mm:ss"
@@ -48,7 +48,7 @@ async function scheduleNotification(client) {
         );
 
         //Send multiple reminders if there's two bosses at once
-        for (let boss of nextBoss) {
+        for (const boss of nextBoss) {
           await notifHook.send({
             content: `${
               boss.shortName
@@ -84,7 +84,7 @@ async function scheduleNotification(client) {
         const guild = await client.guilds.fetch(process.env.GUILD_ID);
         const botAuthor = await guild.members.fetch(process.env.BOT_AUTHOR_ID);
 
-        for (let boss of nextBoss) {
+        for (const boss of nextBoss) {
           let freshStatus;
           if (!boss.isWorldBoss) {
             freshStatus = await getFreshFieldStatus();

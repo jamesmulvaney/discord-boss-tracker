@@ -49,7 +49,7 @@ async function timersMessage(client) {
   }
 
   //Sort active bosses
-  for (let activeBoss of activeBosses) {
+  for (const activeBoss of activeBosses) {
     const uptime = parseElapsed(activeBoss.startTime);
     let name = activeBoss.bossInfo.shortName;
 
@@ -61,7 +61,7 @@ async function timersMessage(client) {
   }
 
   //Sort schedule
-  for (let boss of schedule) {
+  for (const boss of schedule) {
     if (!boss.nextSpawn || activeList.includes(boss.shortName)) continue;
 
     const timeUntil = parseTimeUntil(boss.nextSpawn);
@@ -77,7 +77,7 @@ async function timersMessage(client) {
   }
 
   //Sort field boss windows
-  for (let boss of fieldBosses) {
+  for (const boss of fieldBosses) {
     if (!boss.clearTime || activeList.includes(boss.shortName)) continue;
 
     let name = boss.shortName;

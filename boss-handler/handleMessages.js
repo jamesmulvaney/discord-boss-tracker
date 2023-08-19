@@ -17,14 +17,14 @@ async function checkMessage(message) {
     const bossList = await getBossList();
 
     //Find boss from alias provided by user
-    for (let boss of bossList) {
+    for (const boss of bossList) {
       const bossRegex = RegExp(`${boss.aliases}`);
 
       if (bossRegex.test(message.content)) {
         let alreadyUp = false;
 
         //If the boss is already up, ingnore the call
-        for (let activeBoss of activeBosses) {
+        for (const activeBoss of activeBosses) {
           if (activeBoss.bossInfo.name === boss.name) {
             alreadyUp = true;
             break;
@@ -77,7 +77,7 @@ async function checkMessage(message) {
   //Check for boss alias
   let matchedBoss;
   if (activeBosses.length > 1) {
-    for (let boss of activeBosses) {
+    for (const boss of activeBosses) {
       const aliasRegexp = new RegExp(`${boss.bossInfo.aliases}`);
 
       if (aliasRegexp.test(message.content)) {
@@ -106,11 +106,11 @@ async function checkMessage(message) {
   //Check for channel alias if the boss is a field boss
   let matchedChannel;
   if (!matchedBoss.bossInfo.isWorldBoss) {
-    for (channel of matchedBoss.status) {
-      const channelRegexp = new RegExp(`${channel.aliases}`);
+    for (const status of matchedBoss.status) {
+      const channelRegexp = new RegExp(`${status.channel.aliases}`);
       if (channelRegexp.test(message.content)) {
-        if (!channel.isArsha) {
-          matchedChannel = channel.name;
+        if (!status.channel.isArsha) {
+          matchedChannel = status.channel.name;
           channelRegexp.exec(message.content);
           break;
         }

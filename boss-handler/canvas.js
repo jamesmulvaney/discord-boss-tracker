@@ -135,7 +135,7 @@ async function createChart(boss) {
 
     let col = 0;
     let row = 0;
-    for (let status of boss.status) {
+    for (const status of boss.status) {
       const xPos = 20 + 64 * col;
       const yPos = 20 + (20 * row + 5 * row);
 
