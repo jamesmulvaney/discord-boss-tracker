@@ -102,7 +102,7 @@ class Boss {
 
     if (this.isHidden) return;
 
-    const uptime = parseUptime(this.startTime);
+    const uptime = parseUptime(this.startTime, true);
     const chart = await createChart(this);
 
     const statusHook = await this.client.fetchWebhook(
@@ -318,7 +318,8 @@ class Boss {
       embed = {
         color: 0x8a0000,
         title: `${this.bossInfo.name} all clear after ${parseUptime(
-          this.startTime
+          this.startTime,
+          true
         )}`,
         fields: embedFields,
         thumbnail: {
@@ -347,7 +348,8 @@ class Boss {
       embed = {
         color: 0x8a0000,
         title: `${this.bossInfo.shortName} all clear after ${parseUptime(
-          this.startTime
+          this.startTime,
+          true
         )}s`,
         fields: embedFields,
         thumbnail: {
@@ -400,7 +402,8 @@ class Boss {
               this.bossInfo.forceDespawnTime
             )}, adjusted to initial despawn`
           : `${this.bossInfo.name} all clear after ${parseUptime(
-              this.startTime
+              this.startTime,
+              true
             )}`,
       fields: embedField,
       thumbnail: {

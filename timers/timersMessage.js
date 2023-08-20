@@ -2,18 +2,19 @@ const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const duration = require("dayjs/plugin/duration");
 const { activeBosses } = require("../boss-handler/activeBosses");
-const { parseTimeUntil, parseElapsed } = require("../boss-handler/parseUptime");
+const { parseUptime, parseTimeUntil } = require("../boss-handler/parseUptime");
 const { getBossSchedule } = require("../queries/getBossSchedule");
 const { getFieldBossList } = require("../queries/getFieldBoss");
 const { checkMaintenanceMode } = require("./checkMaintenance");
 dayjs.extend(utc);
 dayjs.extend(duration);
 
+const timerMessageId = [];
+
 async function timersMessage(client) {
   const schedule = await getBossSchedule();
   const config = await checkMaintenanceMode();
   const fieldBosses = await getFieldBossList();
-  const messageId = [];
 
   let mainList = "";
   let activeList = "";
@@ -50,7 +51,7 @@ async function timersMessage(client) {
 
   //Sort active bosses
   for (const activeBoss of activeBosses) {
-    const uptime = parseElapsed(activeBoss.startTime);
+    const uptime = parseUptime(activeBoss.startTime, false);
     let name = activeBoss.bossInfo.shortName;
 
     if (name.length < 17) {
@@ -105,7 +106,7 @@ async function timersMessage(client) {
 
       inWindowList += `${name} ${timeUntil} until window closes\n`;
     } else {
-      const timeUntil = parseElapsed(windowClose);
+      const timeUntil = parseUptime(windowClose, false);
       if (name.length < 17) {
         name = name.padEnd(
           name.length + (18 - (name.length + timeUntil.length))
@@ -168,7 +169,7 @@ async function timersMessage(client) {
       embeds: embedArray,
     })
     .then((message) => {
-      messageId.push(message);
+      timerMessageId.push(message);
     });
 
   setTimeout(() => {
@@ -177,10 +178,10 @@ async function timersMessage(client) {
     //Delete old timer 1 second after the new timer is sent.
     //Prevents flashing a blank channel
     setTimeout(() => {
-      const toDelete = messageId.shift();
+      const toDelete = timerMessageId.shift();
       toDelete.delete();
     }, 1000);
   }, 59450);
 }
 
-module.exports = { timersMessage };
+module.exports = { timersMessage, timerMessageId };

@@ -4,49 +4,15 @@ const duration = require("dayjs/plugin/duration");
 dayjs.extend(utc);
 dayjs.extend(duration);
 
-function parseUptime(time) {
+function parseUptime(time, showSeconds) {
   const currTime = dayjs().utc();
   const startTime = dayjs(time).utc();
-  let formattedTime;
+  const duration = dayjs.duration(currTime.diff(startTime));
+  let formattedTime = "";
 
-  if (currTime.diff(startTime, "seconds") <= 59) {
-    formattedTime = `${currTime.diff(startTime, "seconds")}s`;
-  } else if (
-    currTime.diff(startTime, "seconds") >= 60 &&
-    currTime.diff(startTime, "seconds") <= 3600
-  ) {
-    formattedTime = dayjs.duration(currTime.diff(startTime)).format("m[m]s[s]");
-  } else {
-    formattedTime = dayjs
-      .duration(currTime.diff(startTime))
-      .format("H[h]m[m]s[s]");
-  }
-
-  return formattedTime;
-}
-
-function parseElapsed(time) {
-  const currTime = dayjs().utc();
-  const startTime = dayjs(time).utc();
-  let formattedTime;
-
-  if (currTime.diff(startTime, "seconds") <= 59) {
-    formattedTime = `${currTime.diff(startTime, "seconds")}s`;
-  } else if (
-    currTime.diff(startTime, "seconds") >= 60 &&
-    currTime.diff(startTime, "seconds") <= 3600
-  ) {
-    formattedTime = dayjs.duration(currTime.diff(startTime)).format("m[m]");
-  } else if (
-    currTime.diff(startTime, "seconds") >= 3600 &&
-    currTime.diff(startTime, "seconds") < 86400
-  ) {
-    formattedTime = dayjs.duration(currTime.diff(startTime)).format("H[h]m[m]");
-  } else {
-    formattedTime = dayjs
-      .duration(currTime.diff(startTime))
-      .format("D[d]H[h]m[m]");
-  }
+  if (duration.hours() > 0) formattedTime += `${duration.hours()}h`;
+  if (duration.minutes() > 0) formattedTime += `${duration.minutes()}m`;
+  if (showSeconds) formattedTime += `${duration.seconds()}s`;
 
   return formattedTime;
 }
@@ -54,15 +20,12 @@ function parseElapsed(time) {
 function parseForceDespawnTime(time, forceDespawnTime) {
   const startTime = dayjs(time).utc();
   const endTime = startTime.add(forceDespawnTime, "minutes");
-  let formattedTime;
+  const duration = dayjs.duration(endTime.diff(startTime));
+  let formattedTime = "";
 
-  if (endTime.diff(startTime, "seconds") < 3600) {
-    formattedTime = dayjs.duration(endTime.diff(startTime)).format("m[m]s[s]");
-  } else {
-    formattedTime = dayjs
-      .duration(endTime.diff(startTime))
-      .format("H[h]m[m]s[s]");
-  }
+  if (duration.hours() > 0) formattedTime += `${duration.hours()}h`;
+  if (duration.minutes() > 0) formattedTime += `${duration.minutes()}m`;
+  formattedTime += `${duration.seconds()}s`;
 
   return formattedTime;
 }
@@ -70,62 +33,29 @@ function parseForceDespawnTime(time, forceDespawnTime) {
 function parseTimeUntil(time) {
   const currTime = dayjs().utc();
   const startTime = dayjs(time).utc();
-  let formattedTime;
+  const duration = dayjs.duration(startTime.diff(currTime));
+  let formattedTime = "";
 
-  if (startTime.diff(currTime, "seconds") <= 59) {
-    formattedTime = `${startTime.diff(currTime, "seconds")}s`;
-  } else if (
-    startTime.diff(currTime, "seconds") >= 60 &&
-    startTime.diff(currTime, "seconds") < 3600
-  ) {
-    formattedTime = dayjs.duration(startTime.diff(currTime)).format("m[m]");
-  } else if (
-    startTime.diff(currTime, "seconds") >= 3600 &&
-    startTime.diff(currTime, "seconds") < 86400
-  ) {
-    formattedTime = dayjs.duration(startTime.diff(currTime)).format("H[h]m[m]");
-  } else if (
-    startTime.diff(currTime, "seconds") >= 86400 &&
-    startTime.diff(currTime, "seconds") < 604800
-  ) {
-    formattedTime = dayjs
-      .duration(startTime.diff(currTime))
-      .format("D[d]H[h]m[m]");
-  }
+  if (duration.days() > 0) formattedTime += `${duration.days()}d`;
+  if (duration.hours() > 0) formattedTime += `${duration.hours()}h`;
+  formattedTime += `${duration.minutes()}m`;
 
   return formattedTime;
 }
 
-function parseCanvasTime(updateTime) {
-  updateTime = dayjs(updateTime).utc();
+function parseCanvasTime(lastUpdate) {
+  const updateTime = dayjs(lastUpdate).utc();
   const currTime = dayjs().utc();
-  let timeInSeconds;
-  let formattedTime;
+  const duration = dayjs.duration(currTime.diff(updateTime));
+  let timeInSeconds = duration.asSeconds();
+  let formattedTime = "";
 
-  if (currTime.diff(updateTime, "seconds") <= 59) {
-    timeInSeconds = currTime.diff(updateTime, "seconds");
-    formattedTime = timeInSeconds + "s";
-  } else if (
-    currTime.diff(updateTime, "seconds") >= 60 &&
-    currTime.diff(updateTime, "seconds") <= 3600
-  ) {
-    timeInSeconds = dayjs.duration(
-      dayjs(currTime, "DD/MM/YYYY HH:mm:ss").diff(
-        dayjs(updateTime, "DD/MM/YYYY HH:mm:ss"),
-        "seconds"
-      ),
-      "seconds"
-    );
-    formattedTime = timeInSeconds.format("m[m]");
+  if (duration.hours() > 0) {
+    formattedTime += `${duration.hours()}h`;
+  } else if (duration.hours() === 0 && duration.minutes() > 0) {
+    formattedTime += `${duration.minutes()}m`;
   } else {
-    timeInSeconds = dayjs.duration(
-      dayjs(currTime, "DD/MM/YYYY HH:mm:ss").diff(
-        dayjs(updateTime, "DD/MM/YYYY HH:mm:ss"),
-        "seconds"
-      ),
-      "seconds"
-    );
-    formattedTime = timeInSeconds.format("H[h]");
+    formattedTime += `${duration.seconds()}s`;
   }
 
   return [timeInSeconds, formattedTime];
@@ -135,6 +65,5 @@ module.exports = {
   parseUptime,
   parseTimeUntil,
   parseCanvasTime,
-  parseElapsed,
   parseForceDespawnTime,
 };

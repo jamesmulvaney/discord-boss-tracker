@@ -1,3 +1,5 @@
+const { timerMessageId } = require("../timers/timersMessage");
+
 module.exports = {
   name: "restart",
   description: "Restart the bot.",
@@ -8,6 +10,7 @@ module.exports = {
         await msg.reply({
           content: "Restarting bot, please wait a few seconds...",
         });
+        await timerMessageId.shift().delete();
         process.exit(1);
       }
     }
