@@ -101,6 +101,15 @@ class Boss {
     }
 
     if (this.isHidden) return;
+    if (
+      !dayjs()
+        .utc()
+        .isBefore(
+          this.startTime.add(this.bossInfo.forceClearTime, "minutes")
+        ) &&
+      !this.isRevived
+    )
+      return;
 
     const uptime = parseUptime(this.startTime, true);
     const chart = await createChart(this);
@@ -179,7 +188,7 @@ class Boss {
       this.status[0].updated = dayjs().utc().format();
 
       if (health === "Desp" || health === "Dead") {
-        this.clearBoss(health);
+        this.clearBoss("auto");
         if (!this.isRevived) this.forceClearTask.stop();
       }
     } else {
@@ -274,7 +283,7 @@ class Boss {
     });
 
     if (count === this.status.length) {
-      this.clearBoss("fieldClear");
+      this.clearBoss("auto");
       if (!this.isRevived) this.forceClearTask.stop();
       this.isActive = false;
     }
@@ -320,34 +329,35 @@ class Boss {
       });
     }
 
-    if (type === "manual") {
-      embed = {
-        color: 0x8a0000,
-        title: `${this.bossInfo.name} all clear after ${parseUptime(
-          this.startTime,
-          true
-        )}`,
-        fields: embedFields,
-        thumbnail: {
-          url: `${this.bossInfo.avatar}`,
-        },
-        footer: {
-          text: "This boss was cleared by a moderator. @mention them if the boss if still alive on your channel.",
-        },
-      };
-    } else if (type === "force") {
-      embed = {
-        color: 0x8a0000,
-        title: `${this.bossInfo.name} all clear after ${parseForceDespawnTime(
+    if (type === "force" || type === "manual") {
+      const currTime = dayjs().utc();
+      const forceTime = this.startTime.add(
+        this.bossInfo.forceClearTime,
+        "minutes"
+      );
+      let clearTime = "";
+
+      if (!currTime.isBefore(forceTime)) {
+        clearTime = `${parseForceDespawnTime(
           this.startTime,
           this.bossInfo.forceDespawnTime
-        )}, adjusted to initial despawn`,
+        )}, ajusted to force despawn`;
+      } else {
+        clearTime = `${parseUptime(this.startTime, true)}`;
+      }
+
+      embed = {
+        color: 0x8a0000,
+        title: `${this.bossInfo.name} all clear after ${clearTime}`,
         fields: embedFields,
         thumbnail: {
           url: `${this.bossInfo.avatar}`,
         },
         footer: {
-          text: "This boss reached it's auto-clear time. @mention a mod if it is still alive.",
+          text:
+            type === "force"
+              ? "This boss reached it's auto-clear time. @mention a mod if it is still alive."
+              : "This boss was cleared by a moderator. @mention a mod if it is still alive.",
         },
       };
     } else {
@@ -406,7 +416,7 @@ class Boss {
           ? `${this.bossInfo.name} all clear after ${parseForceDespawnTime(
               this.startTime,
               this.bossInfo.forceDespawnTime
-            )}, adjusted to initial despawn`
+            )}`
           : `${this.bossInfo.name} all clear after ${parseUptime(
               this.startTime,
               true
@@ -425,7 +435,7 @@ class Boss {
 
     if (this.bossInfo.isWorldBoss) {
       //Killed or desp
-      if (type === "Dead") {
+      if (this.status[0].currentHealth === "Dead") {
         embedField.push({
           name: "**Killed**",
           value: "All Channels",
@@ -437,13 +447,7 @@ class Boss {
         });
       }
     } else {
-      if (type === "fieldClear") {
-        embed = this.fieldClearEmbed("auto");
-      } else if (type === "force") {
-        embed = this.fieldClearEmbed("force");
-      } else {
-        embed = this.fieldClearEmbed("manual");
-      }
+      embed = this.fieldClearEmbed(type);
     }
 
     //#boss-status
