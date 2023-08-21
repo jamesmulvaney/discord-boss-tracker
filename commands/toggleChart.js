@@ -29,9 +29,7 @@ module.exports = {
             //Send log to #logs
             msg.client.channels.fetch(process.env.LOG_CHANNEL_ID).then((c) => {
               c.send({
-                content: `\`${dayjs()
-                  .utc()
-                  .format("YYYY-MM-DDTHH:mm:ss")} UTC\` <#${
+                content: `\`${dayjs().utc().toISOString()}\` <#${
                   msg.channel.id
                 }> \`${boss.bossInfo.shortName}-${
                   toggleType ? "Hidden" : "Unhidden"

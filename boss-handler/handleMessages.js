@@ -50,9 +50,7 @@ async function checkMessage(message) {
             .fetch(process.env.LOG_CHANNEL_ID)
             .then((c) => {
               c.send({
-                content: `\`${dayjs()
-                  .utc()
-                  .format("YYYY-MM-DDTHH:mm:ss")} UTC\` <#${
+                content: `\`${dayjs().utc().toISOString()}\` <#${
                   process.env.STATUS_CHANNEL_ID
                 }> \`${boss.shortName}-Revived\` <@${message.author.id}> \`${
                   message.content
@@ -74,24 +72,33 @@ async function checkMessage(message) {
   );
   if (ignoreRegexp.test(message.content) || activeBosses.length === 0) return;
 
+  let fullMessage = message.content;
+
   //Check for boss alias
   let matchedBoss;
-  if (activeBosses.length > 1) {
-    for (const boss of activeBosses) {
-      const aliasRegexp = new RegExp(`${boss.bossInfo.aliases}`);
+  for (const boss of activeBosses) {
+    const aliasRegexp = new RegExp(`${boss.bossInfo.aliases}`);
 
-      if (aliasRegexp.test(message.content)) {
-        matchedBoss = boss;
-        aliasRegexp.exec(message.content);
-        break;
-      }
+    if (aliasRegexp.test(fullMessage)) {
+      matchedBoss = boss;
+
+      //Remove boss from string
+      fullMessage = fullMessage
+        .replace(aliasRegexp.exec(fullMessage)[0], "")
+        .trim();
+
+      break;
     }
-  } else if (activeBosses.length === 1) {
-    matchedBoss = activeBosses[0];
   }
+
+  //If there's no alias and the only active boss is a field boss, no need for alias.
+  if (!matchedBoss && !activeBosses[0].bossInfo.isWorldBoss)
+    matchedBoss = activeBosses[0];
 
   //If more than one boss is active but no alias is provided
   if (!matchedBoss) {
+    if (activeBosses[0].bossInfo.isWorldBoss) return;
+
     message
       .reply({
         content:
@@ -100,7 +107,7 @@ async function checkMessage(message) {
       .then((m) => {
         setTimeout(() => m.delete(), 10000);
       });
-    return false;
+    return;
   }
 
   //Check for channel alias if the boss is a field boss
@@ -108,10 +115,15 @@ async function checkMessage(message) {
   if (!matchedBoss.bossInfo.isWorldBoss) {
     for (const status of matchedBoss.status) {
       const channelRegexp = new RegExp(`${status.channel.aliases}`);
-      if (channelRegexp.test(message.content)) {
+      if (channelRegexp.test(fullMessage)) {
         if (!status.channel.isArsha) {
           matchedChannel = status.channel.name;
-          channelRegexp.exec(message.content);
+
+          //Remove channel from string
+          fullMessage = fullMessage
+            .replace(channelRegexp.exec(fullMessage)[0], "")
+            .trim();
+
           break;
         }
 
@@ -135,7 +147,7 @@ async function checkMessage(message) {
 
   //Check for health
   let matchedHealth;
-  const aliveRegexp = new RegExp(/(100|[1-9]?[0-9])(?:$|%|hp)/iu);
+  const aliveRegexp = new RegExp(/\b(100|[1-9]?[0-9])(?:$|%|hp)/iu);
   const deadRegexp = new RegExp(
     /d(?:d|ed|ead)?$|died|rip|killed|down|clear|cleared/iu
   );
@@ -143,7 +155,7 @@ async function checkMessage(message) {
   const undoRegexp = new RegExp(/undo|revert/);
   const dnsRegexp = new RegExp(/dns/);
 
-  if (aliveRegexp.test(message.content)) {
+  if (aliveRegexp.test(fullMessage)) {
     matchedHealth = aliveRegexp.exec(message);
     if (
       matchedHealth[0] === "0" ||
@@ -152,13 +164,13 @@ async function checkMessage(message) {
     ) {
       matchedHealth = ["Dead"];
     }
-  } else if (despRegexp.test(message.content)) {
+  } else if (despRegexp.test(fullMessage)) {
     matchedHealth = ["Desp"];
-  } else if (deadRegexp.test(message.content)) {
+  } else if (deadRegexp.test(fullMessage)) {
     matchedHealth = ["Dead"];
-  } else if (undoRegexp.test(message.content)) {
+  } else if (undoRegexp.test(fullMessage)) {
     matchedHealth = ["undo"];
-  } else if (dnsRegexp.test(message.content)) {
+  } else if (dnsRegexp.test(fullMessage)) {
     if (matchedBoss.bossInfo.isWorldBoss) return false;
     matchedHealth = ["DNS"];
   } else {
@@ -180,13 +192,6 @@ async function checkMessage(message) {
     matchedHealth[0].replace("%", ""),
     message
   );
-  matchedBoss.statusHandler();
-  setTimeout(() => {
-    const toDelete = matchedBoss.botMessages.shift();
-    const toClear = matchedBoss.refreshTime.shift();
-    toDelete.delete();
-    clearTimeout(toClear);
-  }, 1000);
   return true;
 }
 

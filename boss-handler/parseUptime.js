@@ -24,7 +24,8 @@ function parseForceDespawnTime(time, forceDespawnTime) {
   let formattedTime = "";
 
   if (duration.hours() > 0) formattedTime += `${duration.hours()}h`;
-  if (duration.minutes() > 0) formattedTime += `${duration.minutes()}m`;
+  if (duration.minutes() > 0 || duration.asSeconds() >= 60)
+    formattedTime += `${duration.minutes()}m`;
   formattedTime += `${duration.seconds()}s`;
 
   return formattedTime;

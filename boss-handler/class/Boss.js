@@ -110,7 +110,7 @@ class Boss {
       process.env.STATUS_HOOK_TOKEN
     );
 
-    await statusHook
+    statusHook
       .send({
         content: dayjs
           .utc()
@@ -128,16 +128,13 @@ class Boss {
       });
 
     //Refresh chart if message has not been send within 60 seconds
-    const refreshRef = setTimeout(
-      () => {
-        this.statusHandler();
-        setTimeout(() => {
-          if (!this.isActive) return;
-          this.deleteLastMessage();
-        }, 1000);
-      },
-      this.bossInfo.isWorldBoss ? 59550 : 59450
-    );
+    const refreshRef = setTimeout(() => {
+      this.statusHandler();
+      setTimeout(() => {
+        if (!this.isActive) return;
+        this.deleteLastMessage();
+      }, 1000);
+    }, 59800);
 
     this.refreshTime.push(refreshRef);
   }
@@ -149,7 +146,7 @@ class Boss {
       process.env.NOTIF_HOOK_TOKEN
     );
 
-    await notifHook.send({
+    notifHook.send({
       content: `${this.bossInfo.name} has spawned. Status in <#${
         process.env.STATUS_CHANNEL_ID
       }> @everyone \`${dayjs().utc().format("YYYY/MM/DD HH:mm:ss")} UTC\``,
@@ -186,40 +183,44 @@ class Boss {
         if (!this.isRevived) this.forceClearTask.stop();
       }
     } else {
-      this.status.forEach((s) => {
-        if (s.channel.name === channel) {
+      for (const status of this.status) {
+        if (status.channel.name === channel) {
+          //Undo current health to previous health
           if (health === "undo") {
-            s.currentHealth = s.previousHealth;
-            hp = s.currentHealth;
+            status.currentHealth = status.previousHealth;
+            hp = status.currentHealth;
 
-            const healthType = this.getHealthType("", s.previousHealth);
+            const healthType = this.getHealthType("", status.previousHealth);
             type = healthType.type;
-            s.clear = health.clear;
+            status.clear = health.clear;
           } else {
-            s.previousHealth = s.currentHealth;
-            s.currentHealth = health;
+            //If already marked as dead/desp/dns, don't reupdate.
+            if (!parseInt(health) && health === status.currentHealth) return;
 
-            const healthType = this.getHealthType(s.currentHealth, "");
+            status.previousHealth = status.currentHealth;
+            status.currentHealth = health;
+
+            const healthType = this.getHealthType(status.currentHealth, "");
             type = healthType.type;
-            s.clear = health.clear;
+            status.clear = health.clear;
           }
 
-          s.updated = dayjs().utc().format();
-          channelTag = s.channel.shortName;
+          status.updated = dayjs().utc().format();
+          channelTag = status.channel.shortName;
 
           //Check if all the channels are clear
           this.checkIfClear();
 
-          return;
+          break;
         }
-      });
+      }
     }
 
     if (hp === "Dead" || hp === "Desp" || hp === "DNS") hp = "0";
 
     this.client.channels.fetch(process.env.LOG_CHANNEL_ID).then((c) =>
       c.send({
-        content: `\`${dayjs().utc().format("YYYY-MM-DDTHH:mm:ss")} UTC\` <#${
+        content: `\`${dayjs().utc().toISOString()}\` <#${
           process.env.STATUS_CHANNEL_ID
         }> \`${channelTag}-${this.bossInfo.shortName}-${hp}-${type}\` <@${
           message.author.id
@@ -229,6 +230,11 @@ class Boss {
 
     //Update the boss health in the database
     updateStatus(this.bossInfo.id, this.status);
+
+    this.statusHandler();
+    setTimeout(() => {
+      this.deleteLastMessage();
+    }, 1000);
   }
 
   getHealthType(currentHealth, previousHealth) {

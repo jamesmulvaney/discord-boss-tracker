@@ -56,9 +56,7 @@ async function callBoss(msg, args) {
                 .fetch(process.env.LOG_CHANNEL_ID)
                 .then((c) => {
                   c.send({
-                    content: `\`${dayjs()
-                      .utc()
-                      .format("YYYY-MM-DDTHH:mm:ss")} UTC\` <#${
+                    content: `\`${dayjs().utc().toISOString()}\` <#${
                       process.env.STATUS_CHANNEL_ID
                     }> \`${boss.shortName}-Spawned\` <@${msg.author.id}> \`${
                       msg.content
@@ -103,9 +101,7 @@ async function callBoss(msg, args) {
         //Send log to #logs
         msg.client.channels.fetch(process.env.LOG_CHANNEL_ID).then((c) => {
           c.send({
-            content: `\`${dayjs()
-              .utc()
-              .format("YYYY-MM-DDTHH:mm:ss")} UTC\` <#${
+            content: `\`${dayjs().utc().toISOString()}\` <#${
               process.env.STATUS_CHANNEL_ID
             }> \`${boss.shortName}-Spawned\` <@${msg.author.id}> \`${
               msg.content
