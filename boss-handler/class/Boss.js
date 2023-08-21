@@ -341,7 +341,7 @@ class Boss {
         clearTime = `${parseForceDespawnTime(
           this.startTime,
           this.bossInfo.forceDespawnTime
-        )}, ajusted to force despawn`;
+        )}, adjusted to force despawn`;
       } else {
         clearTime = `${parseUptime(this.startTime, true)}`;
       }
