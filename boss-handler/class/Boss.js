@@ -332,7 +332,7 @@ class Boss {
     if (type === "force" || type === "manual") {
       const currTime = dayjs().utc();
       const forceTime = this.startTime.add(
-        this.bossInfo.forceClearTime,
+        this.bossInfo.forceDespawnTime,
         "minutes"
       );
       let clearTime = "";

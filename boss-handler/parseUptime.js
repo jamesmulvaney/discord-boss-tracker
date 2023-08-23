@@ -17,6 +17,18 @@ function parseUptime(time, showSeconds) {
   return formattedTime;
 }
 
+function parseElapsed(time) {
+  const currTime = dayjs().utc();
+  const startTime = dayjs(time).utc();
+  const duration = dayjs.duration(currTime.diff(startTime));
+  let formattedTime = "";
+
+  if (duration.hours() > 0) formattedTime += `${duration.hours()}h`;
+  formattedTime += `${duration.minutes()}m`;
+
+  return formattedTime;
+}
+
 function parseForceDespawnTime(time, forceDespawnTime) {
   const startTime = dayjs(time).utc();
   const endTime = startTime.add(forceDespawnTime, "minutes");
@@ -64,6 +76,7 @@ function parseCanvasTime(lastUpdate) {
 
 module.exports = {
   parseUptime,
+  parseElapsed,
   parseTimeUntil,
   parseCanvasTime,
   parseForceDespawnTime,

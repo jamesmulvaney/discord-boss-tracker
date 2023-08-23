@@ -2,7 +2,7 @@ const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const duration = require("dayjs/plugin/duration");
 const { activeBosses } = require("../boss-handler/activeBosses");
-const { parseUptime, parseTimeUntil } = require("../boss-handler/parseUptime");
+const { parseElapsed, parseTimeUntil } = require("../boss-handler/parseUptime");
 const { getBossSchedule } = require("../queries/getBossSchedule");
 const { getFieldBossList } = require("../queries/getFieldBoss");
 const { checkMaintenanceMode } = require("./checkMaintenance");
@@ -51,7 +51,7 @@ async function timersMessage(client) {
 
   //Sort active bosses
   for (const activeBoss of activeBosses) {
-    const uptime = parseUptime(activeBoss.startTime, false);
+    const uptime = parseElapsed(activeBoss.startTime);
     let name = activeBoss.bossInfo.shortName;
 
     if (name.length < 17) {
@@ -106,7 +106,7 @@ async function timersMessage(client) {
 
       inWindowList += `${name} ${timeUntil} until window closes\n`;
     } else {
-      const timeUntil = parseUptime(windowClose, false);
+      const timeUntil = parseElapsed(windowClose);
       if (name.length < 17) {
         name = name.padEnd(
           name.length + (18 - (name.length + timeUntil.length))
