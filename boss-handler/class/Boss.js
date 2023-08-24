@@ -36,7 +36,7 @@ class Boss {
 
     console.log(
       `[${dayjs().utc().format("HH:mm:ss")}][LOG] ${
-        this.calledBy.tag ? this.calledBy.tag : "SERVER"
+        this.calledBy ? this.calledBy.tag : "SERVER"
       } has called up ${this.bossInfo.name}.`
     );
 
