@@ -23,6 +23,7 @@ function parseElapsed(time) {
   const duration = dayjs.duration(currTime.diff(startTime));
   let formattedTime = "";
 
+  if (duration.days() > 0) formattedTime += `${duration.days()}d`;
   if (duration.hours() > 0) formattedTime += `${duration.hours()}h`;
   formattedTime += `${duration.minutes()}m`;
 

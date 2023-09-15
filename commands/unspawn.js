@@ -20,7 +20,9 @@ module.exports = {
             bossName = activeBosses[i].bossInfo.shortName;
             activeBosses[i].isActive = false;
             activeBosses[i].deleteLastMessage();
-            activeBosses[i].forceClearTask.stop();
+
+            if (!activeBosses[i].isRevived)
+              activeBosses[i].forceClearTask.stop();
 
             //Boss status message
             await msg.client.channels
