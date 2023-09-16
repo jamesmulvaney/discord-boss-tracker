@@ -1,6 +1,6 @@
 const { prisma } = require("../db");
 
-async function updateIsMaintenance(isMaintenance, maintEnd) {
+async function updateIsMaintenance(isMaintenance, maintStart, maintEnd) {
   let config;
 
   if (maintEnd) {
@@ -40,8 +40,8 @@ async function updateIsMaintenance(isMaintenance, maintEnd) {
       where: { id: 1 },
       data: {
         isMaintenance,
-        maintenanceLength: null,
-        nextMaintenance: null,
+        maintStart: null,
+        maintEnd: null,
       },
     });
   }
@@ -49,12 +49,12 @@ async function updateIsMaintenance(isMaintenance, maintEnd) {
   return config;
 }
 
-async function updateMaintenanceTime(nextMaintenance, maintenanceLength) {
+async function updateMaintenanceTime(maintStart, maintEnd) {
   const config = await prisma.config.update({
     where: { id: 1 },
     data: {
-      nextMaintenance,
-      maintenanceLength,
+      maintStart,
+      maintEnd,
     },
   });
 

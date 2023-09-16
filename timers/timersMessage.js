@@ -29,9 +29,9 @@ async function timersMessage(client) {
   );
 
   //Maintenance Information
-  if (config[0].nextMaintenance) {
-    const nextMaintTime = dayjs(config[0].nextMaintenance).utc();
-    const maintEnd = nextMaintTime.add(config[0].maintenanceLength, "minutes");
+  if (config[0].maintStart) {
+    const nextMaintTime = dayjs(config[0].maintStart).utc();
+    const maintEnd = dayjs(config[0].maintEnd).utc();
     const now = dayjs().utc();
 
     if (now.isBefore(nextMaintTime)) {
@@ -136,7 +136,7 @@ async function timersMessage(client) {
   };
 
   const notInWindowEmbed = {
-    color: 0x921c1c,
+    color: 0x9c0000,
     title: ":hourglass_flowing_sand: Not In Window",
     description: `\`\`\`js\n${notInWindowList}\`\`\``,
     footer: {
@@ -145,7 +145,7 @@ async function timersMessage(client) {
   };
 
   const inWindowEmbed = {
-    color: 0xdcd264,
+    color: 0xfff269,
     title: ":alarm_clock: In Window",
     description: `\`\`\`js\n${inWindowList}\`\`\``,
     footer: {

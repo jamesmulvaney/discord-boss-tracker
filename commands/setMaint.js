@@ -6,23 +6,25 @@ dayjs.extend(utc);
 
 module.exports = {
   name: "setmaint",
-  description: "Set maintenance time. Syntax: `!setmaint <startTime> <length>`",
+  description:
+    "Set maintenance time. Syntax: `!setmaint <startTime> <endTime>`",
   guildOnly: true,
   async execute(msg, args) {
     if (msg.channelId === process.env.MOD_CHANNEL_ID) {
       if (msg.member?.roles.cache.has(process.env.MOD_ROLE_ID)) {
         if (args.length === 2) {
-          const time = dayjs(args[0]).utc();
+          const startTime = dayjs(args[0]).utc();
+          const endTime = dayjs(args[1]).utc();
 
           try {
             const newConfig = await updateMaintenanceTime(
-              time.toDate(),
-              parseInt(args[1])
+              startTime.toDate(),
+              endTime.toDate()
             );
             config.pop();
             config.push(newConfig);
             msg.reply(
-              `Maintenance set. Starting \`${time}\` and lasting for \`${args[1]} minutes\`.`
+              `Maintenance set. Starting \`${startTime.toISOString()}\` and ending \`${endTime.toISOString()}\`.`
             );
           } catch (err) {
             console.error(err);

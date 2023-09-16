@@ -41,12 +41,9 @@ async function scheduleNotification(client) {
 
       //Do not spawn boss when game is under maintenance
       if (
-        !config[0].nextMaintenance ||
-        !spawnsAt.isBefore(
-          dayjs(config[0].nextMaintenance)
-            .utc()
-            .add(config[0].maintenanceLength, "minutes")
-        )
+        !config[0].isMaintenance ||
+        (config[0].isMaintenance &&
+          !spawnsAt.isBefore(dayjs(config[0].maintEnd).utc()))
       ) {
         //Cron for reminder
         cron.schedule(

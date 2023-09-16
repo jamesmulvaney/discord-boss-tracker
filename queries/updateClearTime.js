@@ -9,15 +9,12 @@ async function updateClearTime(shortName, windowCooldown, time) {
   let windowOpen = time.add(windowCooldown, "minutes").toDate();
   let windowClose = time.add(windowCooldown + 420, "minutes").toDate();
 
-  if (config[0].nextMaintenance) {
-    if (dayjs(windowOpen).isAfter(dayjs(config[0].nextMaintenance).utc())) {
-      windowOpen = dayjs(config[0].nextMaintenance)
+  if (config[0].maintStart) {
+    if (dayjs(windowOpen).isAfter(dayjs(config[0].maintStart).utc())) {
+      windowOpen = dayjs(config[0].maintEnd).utc().add(300, "minutes").toDate();
+      windowClose = dayjs(config[0].maintEnd)
         .utc()
-        .add(config[0].maintenanceLength + 300, "minutes")
-        .toDate();
-      windowClose = dayjs(config[0].nextMaintenance)
-        .utc()
-        .add(config[0].maintenanceLength + 720, "minutes")
+        .add(720, "minutes")
         .toDate();
     }
   }

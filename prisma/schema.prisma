@@ -12,11 +12,11 @@ datasource db {
 }
 
 model Config {
-  id                Int       @id @default(autoincrement())
-  isMaintenance     Boolean
-  nextMaintenance   DateTime?
-  maintenanceLength Int?
-  isSeason          Boolean
+  id            Int       @id @default(autoincrement())
+  isMaintenance Boolean
+  maintStart    DateTime?
+  maintEnd      DateTime?
+  isSeason      Boolean
 }
 
 model Channel {
