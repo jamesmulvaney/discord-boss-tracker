@@ -13,6 +13,17 @@ module.exports = {
     if (msg.channelId === process.env.MOD_CHANNEL_ID) {
       if (msg.member?.roles.cache.has(process.env.MOD_ROLE_ID)) {
         if (args.length === 2) {
+          //Validation
+          if (!dayjs(args[1]).isValid()) {
+            msg.reply(
+              `Invalid time string provided. Current time string: \`${dayjs()
+                .utc()
+                .toISOString()}\``
+            );
+
+            return;
+          }
+
           const time = dayjs(args[1]).utc();
           const bossList = await staticBossList;
 
