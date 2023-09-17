@@ -1,33 +1,34 @@
-const gcalConfig = require("../config/googleCalendarSettings");
-const gcalAPI = require("node-google-calendar");
+const { getCalendarClient } = require("../lib/googleCalendarClient");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
-const gcal = new gcalAPI(gcalConfig);
 dayjs.extend(utc);
 
 async function fetchCalendar() {
-  const options = {
-    timeMin: dayjs().utcOffset("-08:00").format(),
-    timeMax: dayjs().utcOffset("-08:00").add(7, "days").format(),
-    singleEvents: true,
-    orderBy: "startTime",
-  };
-  let calendar = [];
+  const calClient = await getCalendarClient;
+  let calendarRes = [];
 
-  await gcal.Events.list(gcalConfig.calendarId.primary, options)
+  await calClient.events
+    .list({
+      calendarId: process.env.GOOGLE_CALENDAR_ID,
+      timeMin: dayjs().utcOffset("-08:00").toISOString(),
+      timeMax: dayjs().utcOffset("-08:00").add(7, "days").toISOString(),
+      singleEvents: true,
+      orderBy: "startTime",
+    })
     .then((res) => {
       console.log(
         `[${dayjs()
           .utc()
           .format("HH:mm:ss")}][LOG] Fetched Google Calendar Schedule`
       );
-      calendar = res;
+
+      calendarRes = res.data.items;
     })
     .catch((err) => {
       console.error(err);
     });
 
-  return calendar;
+  return calendarRes;
 }
 
 module.exports = {

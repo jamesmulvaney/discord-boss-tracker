@@ -34,9 +34,9 @@ async function scheduleNotification(client) {
   if (!dayjs().utc().isAfter(reminderAt)) {
     for (const boss of nextBoss) {
       console.log(
-        `[LOG] Scheduled reminder for ${boss.shortName} at ${reminderAt.format(
-          "YYYY/MM/DD HH:mm:ss"
-        )} UTC`
+        `[${dayjs().utc().format("HH:mm:ss")}][LOG] Scheduled reminder for ${
+          boss.shortName
+        } at ${reminderAt.format("YYYY/MM/DD HH:mm:ss")} UTC`
       );
 
       //Do not spawn boss when game is under maintenance
