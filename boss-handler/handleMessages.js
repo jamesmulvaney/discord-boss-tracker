@@ -105,7 +105,19 @@ async function checkMessage(message) {
           "More than one boss is currently active. Please specify which boss.",
       })
       .then((m) => {
-        setTimeout(() => m.delete(), 10000);
+        setTimeout(
+          () =>
+            m
+              .delete()
+              .catch((err) =>
+                console.log(
+                  `[${dayjs()
+                    .utc()
+                    .format("HH:mm:ss")}][ERROR] Failed to delete message`
+                )
+              ),
+          10000
+        );
       });
     return;
   }
@@ -139,7 +151,19 @@ async function checkMessage(message) {
             "Field bosses spawn on multiple channels. Please specify which channel.",
         })
         .then((m) => {
-          setTimeout(() => m.delete(), 10000);
+          setTimeout(
+            () =>
+              m
+                .delete()
+                .catch((err) =>
+                  console.log(
+                    `[${dayjs()
+                      .utc()
+                      .format("HH:mm:ss")}][ERROR] Failed to delete message`
+                  )
+                ),
+            10000
+          );
         });
       return false;
     }

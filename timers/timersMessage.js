@@ -179,7 +179,15 @@ async function timersMessage(client) {
     //Prevents flashing a blank channel
     setTimeout(() => {
       const toDelete = timerMessageId.shift();
-      toDelete.delete();
+      toDelete
+        .delete()
+        .catch((err) =>
+          console.log(
+            `[${dayjs()
+              .utc()
+              .format("HH:mm:ss")}][ERROR] Failed to delete message`
+          )
+        );
     }, 1000);
   }, 59450);
 }

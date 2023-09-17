@@ -518,7 +518,16 @@ class Boss {
   }
 
   deleteLastMessage() {
-    this.botMessages.shift().delete();
+    this.botMessages
+      .shift()
+      .delete()
+      .catch((err) =>
+        console.log(
+          `[${dayjs()
+            .utc()
+            .format("HH:mm:ss")}][ERROR] Failed to delete message`
+        )
+      );
     clearTimeout(this.refreshTime.shift());
   }
 }

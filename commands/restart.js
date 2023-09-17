@@ -10,7 +10,16 @@ module.exports = {
         await msg.reply({
           content: "Restarting bot, please wait a few seconds...",
         });
-        await timerMessageId.shift().delete();
+        await timerMessageId
+          .shift()
+          .delete()
+          .catch((err) =>
+            console.log(
+              `[${dayjs()
+                .utc()
+                .format("HH:mm:ss")}][ERROR] Failed to delete message`
+            )
+          );
         process.exit(1);
       }
     }

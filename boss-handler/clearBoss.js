@@ -14,15 +14,14 @@ function clearBoss(msg, args) {
       //Clear the boss if it is a field boss.
       if (!activeBosses[i].bossInfo.isWorldBoss) {
         const bossName = activeBosses[i].bossInfo.shortName;
-        msg.reply({ content: `${bossName} cleared` });
-        if (activeBosses[i].forceClearTask)
+
+        if (activeBosses[i].forceClearTask) {
           activeBosses[i].forceClearTask.stop();
+        }
+
         activeBosses[i].clearBoss("manual");
 
-        if (!activeBosses[i].isHidden) {
-          const lastStatusMessage = activeBosses[i].botMessages.shift();
-          lastStatusMessage.delete();
-        }
+        if (!activeBosses[i].isHidden) activeBosses[i].deleteLastMessage();
 
         //Send log to #logs
         msg.client.channels.fetch(process.env.LOG_CHANNEL_ID).then((c) => {
@@ -41,6 +40,8 @@ function clearBoss(msg, args) {
 
         //Remove boss from the array
         activeBosses.splice(i, 1);
+
+        msg.reply({ content: `${bossName} cleared` });
       } else {
         msg.reply({
           content: `Only field bosses can be cleared. For world bosses, call them dead or despawned in <#${process.env.STATUS_CHANNEL_ID}>`,
