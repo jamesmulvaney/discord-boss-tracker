@@ -20,7 +20,7 @@ async function parseCalendar() {
   }
 
   console.log(
-    `[${dayjs().utc().format("HH:mm:ss")}][LOG] Calendar parsed. Next boss: ${
+    `[${dayjs().utc().format("HH:mm:ss")}][LOG] Calendar parsed, Next boss: ${
       completed[0]
     }`
   );

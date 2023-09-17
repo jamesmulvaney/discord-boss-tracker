@@ -15,6 +15,7 @@
     "nodemon": "^2.0.20"
   },
   "dependencies": {
+    "@googleapis/calendar": "^9.3.1",
     "@prisma/client": "^4.10.1",
     "canvas": "^2.11.0",
     "cross-env": "^7.0.3",
