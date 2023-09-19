@@ -1,6 +1,6 @@
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
-const { adjustClearTime } = require("../queries/updateClearTime");
+const { updateClearTime } = require("../queries/updateClearTime");
 const { staticBossList } = require("../queries/getBossList");
 dayjs.extend(utc);
 
@@ -32,7 +32,12 @@ module.exports = {
 
             if (bossRegex.test(args[0])) {
               try {
-                await adjustClearTime(boss.shortName, time);
+                await updateClearTime(
+                  boss.shortName,
+                  boss.windowCooldown,
+                  time
+                );
+
                 msg.reply(
                   `${boss.shortName} clear time adjusted to \`${time.format(
                     "YYYY/MM/DD HH:mm:ss"

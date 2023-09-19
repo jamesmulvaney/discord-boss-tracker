@@ -1,6 +1,5 @@
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
-const { adjustClearTime } = require("../queries/updateClearTime");
 dayjs.extend(utc);
 
 module.exports = {

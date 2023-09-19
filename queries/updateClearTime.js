@@ -33,36 +33,6 @@ async function updateClearTime(shortName, windowCooldown, time) {
   return boss;
 }
 
-async function adjustClearTime(shortName, time) {
-  const bossToAdjust = await prisma.boss.findFirst({
-    where: {
-      shortName,
-    },
-  });
-
-  if (!bossToAdjust) return;
-
-  const cleared = time.toDate();
-  const windowOpen = time.add(bossToAdjust.windowCooldown, "minutes").toDate();
-  const windowClose = time
-    .add(bossToAdjust.windowCooldown + 420, "minutes")
-    .toDate();
-
-  const boss = await prisma.boss.update({
-    where: {
-      shortName,
-    },
-    data: {
-      clearTime: cleared,
-      windowStart: windowOpen,
-      windowEnd: windowClose,
-    },
-  });
-
-  return boss;
-}
-
 module.exports = {
   updateClearTime,
-  adjustClearTime,
 };
