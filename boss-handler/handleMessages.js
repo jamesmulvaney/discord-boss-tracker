@@ -92,7 +92,11 @@ async function checkMessage(message) {
   }
 
   //If there's no alias and the only active boss is a field boss, no need for alias.
-  if (!matchedBoss && !activeBosses[0].bossInfo.isWorldBoss)
+  if (
+    !matchedBoss &&
+    activeBosses.length === 1 &&
+    !activeBosses[0].bossInfo.isWorldBoss
+  )
     matchedBoss = activeBosses[0];
 
   //If more than one boss is active but no alias is provided
