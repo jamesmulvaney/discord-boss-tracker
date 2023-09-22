@@ -1,8 +1,8 @@
 const { callBoss } = require("../boss-handler/callBoss");
 
 module.exports = {
-  name: "b",
-  description: "Used to call a boss up. Syntax: `!b <bossAlias>`",
+  name: "spawn",
+  description: "Used to call a boss up. Syntax: `!spawn <bossAlias>`",
   guildOnly: true,
   execute(msg, args) {
     if (msg.channelId === process.env.STATUS_CHANNEL_ID) {
