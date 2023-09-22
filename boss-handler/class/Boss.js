@@ -6,6 +6,7 @@ const { activeBosses } = require("../activeBosses");
 const cron = require("node-cron");
 const { updateStatus, updateSpawnTime } = require("../../queries/updateStatus");
 const { updateClearTime } = require("../../queries/updateClearTime");
+const { logger } = require("../../utils/logger");
 dayjs.extend(utc);
 
 class Boss {
@@ -34,10 +35,11 @@ class Boss {
     this.isRevived = isRevived;
     this.isHidden = false;
 
-    console.log(
-      `[${dayjs().utc().format("HH:mm:ss")}][LOG] ${
+    logger(
+      "LOG",
+      `${this.bossInfo.shortName} spawned by ${
         this.calledBy ? this.calledBy.tag : "SERVER"
-      } has called up ${this.bossInfo.name}.`
+      }.`
     );
 
     this.statusHandler();
@@ -56,22 +58,21 @@ class Boss {
         this.bossInfo.forceClearTime,
         "minutes"
       );
-      console.log(
-        `[${dayjs().utc().format("HH:mm:ss")}][LOG] ${
-          this.bossInfo.shortName
-        } auto-clear time set to ${clearTime.format("HH:mm:ss")}`
+
+      logger(
+        "LOG",
+        `${this.bossInfo.shortName} auto-clear time set to ${clearTime.format(
+          "HH:mm:ss"
+        )}.`
       );
+
       this.forceClearTask = cron.schedule(
         `${clearTime.second()} ${clearTime.minute()} ${clearTime.hour()} * * *`,
         () => {
           if (!this.isHidden) this.deleteLastMessage();
           this.clearBoss("force");
 
-          console.log(
-            `[${dayjs().utc().format("HH:mm:ss")}][LOG] ${
-              this.bossInfo.shortName
-            } auto-cleared.`
-          );
+          logger("LOG", `${this.bossInfo.name} auto-cleared.`);
 
           for (let i = 0; i < activeBosses.length; i++) {
             if (activeBosses[i].bossInfo.id === this.bossInfo.id) {
@@ -521,13 +522,7 @@ class Boss {
     this.botMessages
       .shift()
       .delete()
-      .catch((err) =>
-        console.log(
-          `[${dayjs()
-            .utc()
-            .format("HH:mm:ss")}][ERROR] Failed to delete message`
-        )
-      );
+      .catch((err) => logger("ERROR", `Failed to delete message.`));
     clearTimeout(this.refreshTime.shift());
   }
 }

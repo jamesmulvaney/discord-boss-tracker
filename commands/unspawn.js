@@ -1,6 +1,7 @@
 const { activeBosses } = require("../boss-handler/activeBosses");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
+const { logger } = require("../utils/logger");
 dayjs.extend(utc);
 
 module.exports = {
@@ -48,11 +49,7 @@ module.exports = {
               })
             );
 
-            console.log(
-              `[${dayjs().utc().format("HH:mm:ss")}][LOG] ${
-                msg.author.tag
-              } has unspawned ${bossName}.`
-            );
+            logger("LOG", `${bossName} unspawned by ${msg.author.tag}.`);
 
             //Remove boss from active boss list
             activeBosses.splice(i, 1);

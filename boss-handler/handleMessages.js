@@ -1,4 +1,5 @@
 const { getBossList } = require("../queries/getBossList");
+const { logger } = require("../utils/logger");
 const { activeBosses } = require("./activeBosses");
 const { Boss } = require("./class/Boss");
 const dayjs = require("dayjs");
@@ -113,13 +114,7 @@ async function checkMessage(message) {
           () =>
             m
               .delete()
-              .catch((err) =>
-                console.log(
-                  `[${dayjs()
-                    .utc()
-                    .format("HH:mm:ss")}][ERROR] Failed to delete message`
-                )
-              ),
+              .catch((err) => logger("ERROR", `Failed to delete message.`)),
           10000
         );
       });
@@ -159,13 +154,7 @@ async function checkMessage(message) {
             () =>
               m
                 .delete()
-                .catch((err) =>
-                  console.log(
-                    `[${dayjs()
-                      .utc()
-                      .format("HH:mm:ss")}][ERROR] Failed to delete message`
-                  )
-                ),
+                .catch((err) => logger("ERROR", `Failed to delete message.`)),
             10000
           );
         });
@@ -205,14 +194,6 @@ async function checkMessage(message) {
     //Ingore
     return false;
   }
-
-  console.log(
-    `[${dayjs().utc().format("HH:mm:ss")}][LOG] @${
-      message.author.tag
-    } successful call. Boss: '${matchedBoss.bossInfo.shortName}'${
-      matchedChannel ? ` Channel: '${matchedChannel}' ` : " "
-    }Health: '${matchedHealth[0]}' Message: '${message.content}'`
-  );
 
   //Set the bosses health, resend the chart, then delete the previous one.
   matchedBoss.setHealth(

@@ -1,7 +1,8 @@
 const { prisma } = require("../db");
+const { logger } = require("../utils/logger");
 
 async function getBossList() {
-  console.log("[LOG] Loading boss list.");
+  logger("LOG", "Loading boss list...");
   const bosses = await prisma.boss.findMany();
 
   return bosses;

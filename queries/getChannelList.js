@@ -1,7 +1,8 @@
 const { prisma } = require("../db");
+const { logger } = require("../utils/logger");
 
 async function getChannelList() {
-  console.log("[LOG] Loading channel list.");
+  logger("LOG", `Loading channel list...`);
   const channels = await prisma.channel.findMany({ orderBy: { id: "asc" } });
 
   return channels;

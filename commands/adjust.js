@@ -2,6 +2,7 @@ const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const { updateClearTime } = require("../queries/updateClearTime");
 const { staticBossList } = require("../queries/getBossList");
+const { logger } = require("../utils/logger");
 dayjs.extend(utc);
 
 module.exports = {
@@ -44,12 +45,13 @@ module.exports = {
                   )}\``
                 );
 
-                console.log(
-                  `[${dayjs().utc().format("HH:mm:ss")}][LOG] ${
+                logger(
+                  "LOG",
+                  `${
                     boss.shortName
-                  } adjusted to '${time.format("YYYY/MM/DD HH:mm:ss")}' by ${
+                  } clear time adjusted to ${time.toISOString()} by ${
                     msg.author.tag
-                  }`
+                  }.`
                 );
               } catch (err) {
                 console.error(err);

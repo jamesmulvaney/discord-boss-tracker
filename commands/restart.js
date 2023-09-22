@@ -1,4 +1,5 @@
 const { timerMessageId } = require("../timers/timersMessage");
+const { logger } = require("../utils/logger");
 
 module.exports = {
   name: "restart",
@@ -13,13 +14,10 @@ module.exports = {
         await timerMessageId
           .shift()
           .delete()
-          .catch((err) =>
-            console.log(
-              `[${dayjs()
-                .utc()
-                .format("HH:mm:ss")}][ERROR] Failed to delete message`
-            )
-          );
+          .catch((err) => logger("ERROR", `Failed to delete message.`));
+
+        logger("LOG", `Bot restarted by ${msg.author.tag}.`);
+
         process.exit(1);
       }
     }

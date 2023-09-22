@@ -6,6 +6,7 @@ const { parseElapsed, parseTimeUntil } = require("../boss-handler/parseUptime");
 const { getBossSchedule } = require("../queries/getBossSchedule");
 const { getFieldBossList } = require("../queries/getFieldBoss");
 const { checkMaintenanceMode } = require("./checkMaintenance");
+const { logger } = require("../utils/logger");
 dayjs.extend(utc);
 dayjs.extend(duration);
 
@@ -170,6 +171,11 @@ async function timersMessage(client) {
     })
     .then((message) => {
       timerMessageId.push(message);
+    })
+    .catch((err) => {
+      loggerr("ERROR", `${err}`);
+
+      timersMessage(client);
     });
 
   setTimeout(() => {
@@ -181,13 +187,7 @@ async function timersMessage(client) {
       const toDelete = timerMessageId.shift();
       toDelete
         .delete()
-        .catch((err) =>
-          console.log(
-            `[${dayjs()
-              .utc()
-              .format("HH:mm:ss")}][ERROR] Failed to delete message`
-          )
-        );
+        .catch((err) => logger("ERROR", `Failed to delete message.`));
     }, 1000);
   }, 59450);
 }

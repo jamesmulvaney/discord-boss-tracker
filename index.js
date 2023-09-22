@@ -6,6 +6,7 @@ const { scheduleNotification } = require("./timers/scheduleNotification");
 const { timersMessage } = require("./timers/timersMessage");
 const { config } = require("./timers/config");
 const { getConfig } = require("./queries/getConfig");
+const { logger } = require("./utils/logger");
 
 //Load environment variables
 dotenv.config();
@@ -34,11 +35,16 @@ for (const f of commandFiles) {
 
 //Bot Loaded
 client.once(Events.ClientReady, async (c) => {
-  console.log("[LOG] BDO Boss Tracker started successfully!");
-  console.log(`[LOG] Logged in as ${c.user.tag}`);
+  logger("LOG", "BDO Boss Tracker started successfully!");
+  logger("LOG", `Logged in as ${c.user.tag}`);
   config.push(await getConfig());
   await scheduleNotification(client);
   await timersMessage(client);
+});
+
+//Reconnect
+client.on(Events.ShardReconnecting, () => {
+  logger("LOG", "Reconnecting to Discord...");
 });
 
 //Command Listener

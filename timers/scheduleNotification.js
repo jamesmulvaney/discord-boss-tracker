@@ -10,6 +10,7 @@ const {
 const { activeBosses } = require("../boss-handler/activeBosses");
 const { Boss } = require("../boss-handler/class/Boss");
 const { config } = require("./config");
+const { logger } = require("../utils/logger");
 dayjs.extend(utc);
 
 async function scheduleNotification(client) {
@@ -33,10 +34,11 @@ async function scheduleNotification(client) {
   //Schedule a reminder in boss-notifications
   if (!dayjs().utc().isAfter(reminderAt)) {
     for (const boss of nextBoss) {
-      console.log(
-        `[${dayjs().utc().format("HH:mm:ss")}][LOG] Scheduled reminder for ${
+      logger(
+        "LOG",
+        `Scheduled reminder for ${
           boss.shortName
-        } at ${reminderAt.format("YYYY/MM/DD HH:mm:ss")} UTC`
+        } at ${reminderAt.toISOString()}.`
       );
 
       //Do not spawn boss when game is under maintenance
@@ -68,11 +70,7 @@ async function scheduleNotification(client) {
               avatarURL: boss.avatar,
             });
 
-            console.log(
-              `[LOG] Reminder for ${boss.name} sent at ${reminderAt.format(
-                "YYYY/MM/DD HH:mm:ss"
-              )} UTC`
-            );
+            logger("LOG", `Reminder sent for ${boss.name}.`);
           },
           {
             timezone: "Etc/UTC",
