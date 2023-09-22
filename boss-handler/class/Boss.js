@@ -202,7 +202,7 @@ class Boss {
 
             const healthType = this.getHealthType("", status.previousHealth);
             type = healthType.type;
-            status.clear = health.clear;
+            status.clear = healthType.clear;
           } else {
             //If already marked as dead/desp/dns, don't reupdate.
             if (!parseInt(health) && health === status.currentHealth) return;
@@ -212,7 +212,7 @@ class Boss {
 
             const healthType = this.getHealthType(status.currentHealth, "");
             type = healthType.type;
-            status.clear = health.clear;
+            status.clear = healthType.clear;
           }
 
           status.updated = dayjs().utc().format();
@@ -367,7 +367,7 @@ class Boss {
         title: `${this.bossInfo.shortName} all clear after ${parseUptime(
           this.startTime,
           true
-        )}s`,
+        )}`,
         fields: embedFields,
         thumbnail: {
           url: `${this.bossInfo.avatar}`,
