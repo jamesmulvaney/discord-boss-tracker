@@ -118,6 +118,8 @@ async function timersMessage(client) {
     }
   }
 
+  if (scheduleList === "") scheduleList = "No bosses scheduled.";
+
   const maintEmbed = {
     color: 0xda8b3c,
     title: ":tools: Maintenance",
