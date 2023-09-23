@@ -768,7 +768,7 @@ async function main() {
       name: "Calpheon 6",
       shortName: "C6",
       aliases: "c(?:a|al|alp|alph|alphe|alpheo|alpheon)?\\s?6",
-      isArsha: false,
+      isArsha: true,
       isSeason: false,
     },
   });
@@ -853,7 +853,7 @@ async function main() {
       name: "Mediah 6",
       shortName: "M6",
       aliases: "m(?:e|ed|edi|edia|ediah)?\\s?6",
-      isArsha: false,
+      isArsha: true,
       isSeason: false,
     },
   });
