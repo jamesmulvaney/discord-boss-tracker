@@ -18,7 +18,7 @@ async function scheduleNotification(client) {
   const nextBoss = [];
   const reminderTime = 5;
 
-  if (!schedule) {
+  if (schedule.length === 0) {
     logger("ERROR", "No bosses found in calendar.");
 
     //Try again in 10mins
