@@ -18,6 +18,26 @@ async function scheduleNotification(client) {
   const nextBoss = [];
   const reminderTime = 5;
 
+  if (!schedule) {
+    logger("ERROR", "No bosses found in calendar.");
+
+    //Try again in 10mins
+    const retryIn = dayjs().utc().add(10, "minutes");
+    cron.schedule(
+      `${retryIn.second()} ${retryIn.minute()} ${retryIn.hour()} ${retryIn.date()} ${
+        retryIn.month() + 1
+      } *`,
+      () => {
+        scheduleNotification(client);
+      },
+      {
+        timezone: "Etc/UTC",
+      }
+    );
+
+    return;
+  }
+
   //Check for double spawn
   if (dayjs(schedule[0].nextSpawn).isSame(dayjs(schedule[1].nextSpawn))) {
     nextBoss.push(schedule[0], schedule[1]);

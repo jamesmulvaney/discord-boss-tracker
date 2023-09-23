@@ -40,6 +40,10 @@ client.once(Events.ClientReady, async (c) => {
   config.push(await getConfig());
   await scheduleNotification(client);
   await timersMessage(client);
+
+  client.channels.fetch(process.env.MOD_CHANNEL_ID).then((c) => {
+    c.send({ content: "Bot online and ready!" });
+  });
 });
 
 //Reconnect
