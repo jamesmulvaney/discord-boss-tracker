@@ -1,8 +1,16 @@
 const { PrismaClient } = require("@prisma/client");
 const prisma = new PrismaClient();
+const dayjs = require("dayjs");
+const utc = require("dayjs/plugin/utc");
+dayjs.extend(utc);
+
 
 //Seeds database with default bosses and channels
 async function main() {
+  const timeNow = dayjs().utc()
+  const timeOpen = timeNow.add(6, 'hours').toDate()
+  const timeClose = timeNow.add(12, 'hours').toDate()
+
   /* 
     World Bosses
   */
@@ -292,6 +300,9 @@ async function main() {
       avatar: "https://i.imgur.com/vxMKkKh.png",
       isWorldBoss: false,
       status: [{}],
+      windowStart: timeOpen,
+      windowEnd: timeClose,
+      clearTime: timeNow.toDate(),
       windowCooldown: 687,
       forceDespawnTime: 65,
       forceClearTime: 197,
@@ -349,6 +360,9 @@ async function main() {
       avatar: "https://i.imgur.com/FGPpI6D.png",
       isWorldBoss: false,
       status: [{}],
+      windowStart: timeOpen,
+      windowEnd: timeClose,
+      clearTime: timeNow.toDate(),
       windowCooldown: 655,
       forceDespawnTime: 65,
       forceClearTime: 131,
@@ -406,6 +420,9 @@ async function main() {
       avatar: "https://i.imgur.com/jQ15DzX.png",
       isWorldBoss: false,
       status: [{}],
+      windowStart: timeOpen,
+      windowEnd: timeClose,
+      clearTime: timeNow.toDate(),
       windowCooldown: 580,
       forceDespawnTime: 35,
       forceClearTime: 36,
