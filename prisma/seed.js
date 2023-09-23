@@ -943,88 +943,88 @@ async function main() {
     },
   });
 
-  //Rulupee
+  //Season
   await prisma.channel.upsert({
     where: {
-      name: "Rulupee 1",
+      name: "Season 1",
     },
     update: {},
     create: {
-      name: "Rulupee 1",
-      shortName: "R1",
-      aliases: "^r(?:u|ul|ulu|ulup|ulupe|ulupee)?\\s?1",
+      name: "Season 1",
+      shortName: "Sea1",
+      aliases: "sea(?:s|so|son)?\\s?1",
       isArsha: false,
-      isSeason: false,
+      isSeason: true,
     },
   });
 
   await prisma.channel.upsert({
     where: {
-      name: "Rulupee 2",
+      name: "Season 2",
     },
     update: {},
     create: {
-      name: "Rulupee 2",
-      shortName: "R2",
-      aliases: "^r(?:u|ul|ulu|ulup|ulupe|ulupee)?\\s?2",
+      name: "Season 2",
+      shortName: "Sea2",
+      aliases: "sea(?:s|so|son)?\\s?2",
       isArsha: false,
-      isSeason: false,
+      isSeason: true,
     },
   });
 
   await prisma.channel.upsert({
     where: {
-      name: "Rulupee 3",
+      name: "Season 3",
     },
     update: {},
     create: {
-      name: "Rulupee 3",
-      shortName: "R3",
-      aliases: "^r(?:u|ul|ulu|ulup|ulupe|ulupee)?\\s?3",
+      name: "Season 3",
+      shortName: "Sea3",
+      aliases: "sea(?:s|so|son)?\\s?3",
       isArsha: false,
-      isSeason: false,
+      isSeason: true,
     },
   });
 
   await prisma.channel.upsert({
     where: {
-      name: "Rulupee 4",
+      name: "Season 4",
     },
     update: {},
     create: {
-      name: "Rulupee 4",
-      shortName: "R4",
-      aliases: "^r(?:u|ul|ulu|ulup|ulupe|ulupee)?\\s?4",
-      isArsha: true,
-      isSeason: false,
+      name: "Season 4",
+      shortName: "Sea4",
+      aliases: "sea(?:s|so|son)?\\s?4",
+      isArsha: false,
+      isSeason: true,
     },
   });
 
   await prisma.channel.upsert({
     where: {
-      name: "Rulupee 5",
+      name: "Season 5",
     },
     update: {},
     create: {
-      name: "Rulupee 5",
-      shortName: "R5",
-      aliases: "^r(?:u|ul|ulu|ulup|ulupe|ulupee)?\\s?5",
-      isArsha: true,
-      isSeason: false,
+      name: "Season 5",
+      shortName: "Sea5",
+      aliases: "sea(?:s|so|son)?\\s?5",
+      isArsha: false,
+      isSeason: true,
     },
   });
 
   await prisma.channel.upsert({
     where: {
-      name: "Rulupee 6",
+      name: "Season 6",
     },
     update: {},
     create: {
-      name: "Rulupee 6",
-      shortName: "R6",
-      aliases: "^r(?:u|ul|ulu|ulup|ulupe|ulupee)?\\s?6",
-      isArsha: true,
-      isSeason: false,
+      name: "Season 6",
+      shortName: "Sea6",
+      aliases: "sea(?:s|so|son)?\\s?6",
+      isArsha: false,
+      isSeason: true,
     },
   });
 
@@ -1032,7 +1032,7 @@ async function main() {
   await prisma.config.create({
     data: {
       isMaintenance: false,
-      isSeason: false,
+      isSeason: true,
     },
   });
 }
