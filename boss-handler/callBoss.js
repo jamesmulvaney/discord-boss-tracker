@@ -1,6 +1,3 @@
-const dayjs = require("dayjs");
-const utc = require("dayjs/plugin/utc");
-const { staticBossList } = require("../queries/getBossList");
 const {
   setFreshStatus,
   getFreshWorldStatus,
@@ -9,94 +6,35 @@ const {
 const { getUberPartner } = require("../queries/getUberPartner");
 const { activeBosses } = require("./activeBosses");
 const { Boss } = require("./class/Boss");
+const { findBossByAlias } = require("./findBossByAlias");
+const dayjs = require("dayjs");
+const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 
 async function callBoss(msg, args) {
   const alias = args.join(" ");
-  const bossList = await staticBossList;
 
-  //Loop through bosses
-  for (const boss of bossList) {
-    const bossRegex = RegExp(`${boss.aliases}`);
+  //Find boss
+  const { boss, isActive } = await findBossByAlias(alias);
 
-    //Test if alias provided by user matches any of the bosses alias
-    if (bossRegex.test(alias)) {
-      let isActive = false;
+  if (!boss || isActive) return;
 
-      //Check if boss is already active
-      for (const activeBoss of activeBosses) {
-        if (activeBoss.bossInfo.id === boss.id) {
-          isActive = true;
-          break;
-        }
-      }
+  //Get a fresh status
+  let freshStatus;
+  if (!boss.isWorldBoss) {
+    freshStatus = await getFreshFieldStatus();
+    setFreshStatus(boss.name, freshStatus);
+  } else {
+    freshStatus = getFreshWorldStatus();
+    setFreshStatus(boss.name, freshStatus);
+  }
 
-      if (!isActive) {
-        //Fresh status array
-        let freshStatus;
-        if (!boss.isWorldBoss) {
-          freshStatus = await getFreshFieldStatus();
-          setFreshStatus(boss.name, freshStatus);
-        } else {
-          freshStatus = getFreshWorldStatus();
-          setFreshStatus(boss.name, freshStatus);
-        }
-
-        let newBoss;
-
-        //Check if uber
-        if (boss.isUber) {
-          //Check if original is active
-          for (const activeBoss of activeBosses) {
-            if (activeBoss.bossInfo.id === boss.uberOf) {
-              activeBoss.changeToUber(boss, msg.author);
-
-              //Send log to #logs
-              msg.client.channels
-                .fetch(process.env.LOG_CHANNEL_ID)
-                .then((c) => {
-                  c.send({
-                    content: `\`${dayjs().utc().toISOString()}\` <#${
-                      process.env.STATUS_CHANNEL_ID
-                    }> \`${boss.shortName}-Spawned\` <@${msg.author.id}> \`${
-                      msg.content
-                    }\``,
-                  });
-                });
-
-              return;
-            }
-          }
-
-          const original = await getUberPartner(boss.uberOf);
-          newBoss = new Boss(
-            {
-              id: original.id,
-              aliases: `${original.aliases}|${boss.aliases}`,
-              ...boss,
-            },
-            dayjs().utc().format(),
-            freshStatus,
-            true,
-            msg.author,
-            msg.client,
-            false,
-            false
-          );
-        } else {
-          newBoss = new Boss(
-            boss,
-            dayjs().utc().format(),
-            freshStatus,
-            true,
-            msg.author,
-            msg.client,
-            false,
-            false
-          );
-        }
-
-        activeBosses.push(newBoss);
+  //Check if uber
+  if (boss.isUber) {
+    //If original version of the boss is active, change it to the empowered version
+    for (const activeBoss of activeBosses) {
+      if (activeBoss.bossInfo.id === boss.uberOf) {
+        activeBoss.changeToUber(boss, msg.author);
 
         //Send log to #logs
         msg.client.channels.fetch(process.env.LOG_CHANNEL_ID).then((c) => {
@@ -112,7 +50,48 @@ async function callBoss(msg, args) {
         return;
       }
     }
+
+    //Allow normal and empowered aliases to be called
+    const original = await getUberPartner(boss.uberOf);
+    activeBosses.push(
+      new Boss(
+        {
+          ...boss,
+          id: original.id,
+          aliases: `${original.aliases}|${boss.aliases}`,
+        },
+        dayjs().utc().format(),
+        freshStatus,
+        true,
+        msg.author,
+        msg.client,
+        false,
+        false
+      )
+    );
+  } else {
+    activeBosses.push(
+      new Boss(
+        boss,
+        dayjs().utc().format(),
+        freshStatus,
+        true,
+        msg.author,
+        msg.client,
+        false,
+        false
+      )
+    );
   }
+
+  //Send log to #logs
+  msg.client.channels.fetch(process.env.LOG_CHANNEL_ID).then((c) => {
+    c.send({
+      content: `\`${dayjs().utc().toISOString()}\` <#${
+        process.env.STATUS_CHANNEL_ID
+      }> \`${boss.shortName}-Spawned\` <@${msg.author.id}> \`${msg.content}\``,
+    });
+  });
 }
 
 module.exports = {

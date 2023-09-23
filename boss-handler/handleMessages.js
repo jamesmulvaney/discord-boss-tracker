@@ -2,6 +2,7 @@ const { getBossList } = require("../queries/getBossList");
 const { logger } = require("../utils/logger");
 const { activeBosses } = require("./activeBosses");
 const { Boss } = require("./class/Boss");
+const { findBossByAlias } = require("./findBossByAlias");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
@@ -15,54 +16,35 @@ async function checkMessage(message) {
     message.content.includes("revive") &&
     message.member?.roles.cache.has(process.env.MOD_ROLE_ID)
   ) {
-    const bossList = await getBossList();
+    //Find boss
+    const { boss, isActive } = await findBossByAlias(message.content);
 
-    //Find boss from alias provided by user
-    for (const boss of bossList) {
-      const bossRegex = RegExp(`${boss.aliases}`);
+    if (!boss || isActive) return;
 
-      if (bossRegex.test(message.content)) {
-        let alreadyUp = false;
+    //Revive boss
+    activeBosses.push(
+      new Boss(
+        boss,
+        boss.lastSpawn,
+        boss.status,
+        true,
+        message.author,
+        message.client,
+        true,
+        true
+      )
+    );
 
-        //If the boss is already up, ingnore the call
-        for (const activeBoss of activeBosses) {
-          if (activeBoss.bossInfo.name === boss.name) {
-            alreadyUp = true;
-            break;
-          }
-        }
-
-        if (!alreadyUp) {
-          //Create boss object with the old health status, but do not send a new notification
-          const revivedBoss = new Boss(
-            boss,
-            boss.lastSpawn,
-            boss.status,
-            true,
-            message.author,
-            message.client,
-            true,
-            true
-          );
-          activeBosses.push(revivedBoss);
-
-          //Send log to #logs
-          message.client.channels
-            .fetch(process.env.LOG_CHANNEL_ID)
-            .then((c) => {
-              c.send({
-                content: `\`${dayjs().utc().toISOString()}\` <#${
-                  process.env.STATUS_CHANNEL_ID
-                }> \`${boss.shortName}-Revived\` <@${message.author.id}> \`${
-                  message.content
-                }\``,
-              });
-            });
-        }
-
-        break;
-      }
-    }
+    //Send log to #logs
+    message.client.channels.fetch(process.env.LOG_CHANNEL_ID).then((c) => {
+      c.send({
+        content: `\`${dayjs().utc().toISOString()}\` <#${
+          process.env.STATUS_CHANNEL_ID
+        }> \`${boss.shortName}-Revived\` <@${message.author.id}> \`${
+          message.content
+        }\``,
+      });
+    });
 
     return;
   }

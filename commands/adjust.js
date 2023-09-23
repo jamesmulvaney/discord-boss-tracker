@@ -1,8 +1,8 @@
+const { findBossByAlias } = require("../boss-handler/findBossByAlias");
+const { updateClearTime } = require("../queries/updateClearTime");
+const { logger } = require("../utils/logger");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
-const { updateClearTime } = require("../queries/updateClearTime");
-const { staticBossList } = require("../queries/getBossList");
-const { logger } = require("../utils/logger");
 dayjs.extend(utc);
 
 module.exports = {
@@ -26,37 +26,35 @@ module.exports = {
           }
 
           const time = dayjs(args[1]).utc();
-          const bossList = await staticBossList;
+          const { boss, isActive } = await findBossByAlias(args[0]);
 
-          for (const boss of bossList) {
-            const bossRegex = RegExp(`${boss.aliases}`);
+          if (!boss) return;
+          if (isActive) {
+            msg.reply(
+              `${boss.shortName} is currently active. You cannot adjust an active boss.`
+            );
+            return;
+          }
 
-            if (bossRegex.test(args[0])) {
-              try {
-                await updateClearTime(
-                  boss.shortName,
-                  boss.windowCooldown,
-                  time
-                );
+          try {
+            await updateClearTime(boss.shortName, boss.windowCooldown, time);
 
-                msg.reply(
-                  `${boss.shortName} clear time adjusted to \`${time.format(
-                    "YYYY/MM/DD HH:mm:ss"
-                  )}\``
-                );
+            msg.reply(
+              `${boss.shortName} clear time adjusted to \`${time.format(
+                "YYYY/MM/DD HH:mm:ss"
+              )}\``
+            );
 
-                logger(
-                  "LOG",
-                  `${
-                    boss.shortName
-                  } clear time adjusted to ${time.toISOString()} by ${
-                    msg.author.tag
-                  }.`
-                );
-              } catch (err) {
-                console.error(err);
-              }
-            }
+            logger(
+              "LOG",
+              `${
+                boss.shortName
+              } clear time adjusted to ${time.toISOString()} by ${
+                msg.author.tag
+              }.`
+            );
+          } catch (err) {
+            console.error(err);
           }
         }
       }
