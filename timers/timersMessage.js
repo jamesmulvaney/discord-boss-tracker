@@ -175,7 +175,7 @@ async function timersMessage(client) {
       timerMessageId.push(message);
     })
     .catch((err) => {
-      loggerr("ERROR", `${err}`);
+      logger("ERROR", `${err}`);
 
       timersMessage(client);
     });

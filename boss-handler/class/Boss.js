@@ -127,7 +127,7 @@ class Boss {
           .isAfter(
             this.startTime.add(this.bossInfo.forceDespawnTime, "minutes")
           )
-          ? ":warning: This boss is past it's forced despawn time. :warning:"
+          ? ":warning: This boss is past its forced despawn time. :warning:"
           : this.bossInfo.info,
         username: `${this.bossInfo.name} - ${uptime} elapsed`,
         avatarURL: this.bossInfo.avatar,
@@ -157,7 +157,7 @@ class Boss {
     );
 
     notifHook.send({
-      content: `${this.bossInfo.name} has spawned. Status in <#${
+      content: `${this.bossInfo.name} has spawned. <#${
         process.env.STATUS_CHANNEL_ID
       }> @everyone \`${dayjs().utc().format("YYYY/MM/DD HH:mm:ss")} UTC\``,
       username: `${this.bossInfo.name}`,
