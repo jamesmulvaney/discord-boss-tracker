@@ -1,9 +1,10 @@
 const { prisma } = require("../db");
+const { maintenanceAdjustment } = require("./updateClearTime");
 
-async function updateIsMaintenance(isMaintenance, maintStart, maintEnd) {
+async function updateIsMaintenance(isMaintenance) {
   let config;
 
-  if (maintEnd) {
+  if (isMaintenance) {
     config = await prisma.config.update({
       where: { id: 1 },
       data: {
@@ -11,30 +12,7 @@ async function updateIsMaintenance(isMaintenance, maintStart, maintEnd) {
       },
     });
 
-    //Update field boss windows (5 hours from maint end)
-    const windowStart = maintEnd.add(5, "hours").toDate();
-    const windowEnd = maintEnd.add(12, "hours").toDate();
-
-    await prisma.boss.updateMany({
-      where: {
-        AND: [
-          {
-            isWorldBoss: {
-              equals: false,
-            },
-          },
-          {
-            shortName: {
-              not: "Shadow",
-            },
-          },
-        ],
-      },
-      data: {
-        windowStart,
-        windowEnd,
-      },
-    });
+    await maintenanceAdjustment(config.maintEnd);
   } else {
     config = await prisma.config.update({
       where: { id: 1 },

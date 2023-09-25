@@ -1,12 +1,13 @@
-const dayjs = require("dayjs");
-const utc = require("dayjs/plugin/utc");
-const duration = require("dayjs/plugin/duration");
+const { config } = require("./config");
 const { activeBosses } = require("../boss-handler/activeBosses");
 const { parseElapsed, parseTimeUntil } = require("../boss-handler/parseUptime");
 const { getBossSchedule } = require("../queries/getBossSchedule");
 const { getFieldBossList } = require("../queries/getFieldBoss");
-const { checkMaintenanceMode } = require("./checkMaintenance");
 const { logger } = require("../utils/logger");
+const { updateIsMaintenance } = require("../queries/setConfig");
+const dayjs = require("dayjs");
+const utc = require("dayjs/plugin/utc");
+const duration = require("dayjs/plugin/duration");
 dayjs.extend(utc);
 dayjs.extend(duration);
 
@@ -14,7 +15,7 @@ const timerMessageId = [];
 
 async function timersMessage(client) {
   const schedule = await getBossSchedule();
-  const config = await checkMaintenanceMode();
+  const config = await getMaintenanceInfo();
   const fieldBosses = await getFieldBossList();
 
   let mainList = "";
@@ -30,12 +31,12 @@ async function timersMessage(client) {
   );
 
   //Maintenance Information
-  if (config[0].maintStart) {
-    const nextMaintTime = dayjs(config[0].maintStart).utc();
-    const maintEnd = dayjs(config[0].maintEnd).utc();
-    const now = dayjs().utc();
+  if (config.maintStart) {
+    const currentTime = dayjs().utc();
+    const nextMaintTime = dayjs(config.maintStart).utc();
+    const maintEnd = dayjs(config.maintEnd).utc();
 
-    if (now.isBefore(nextMaintTime)) {
+    if (currentTime.isBefore(nextMaintTime)) {
       //maint is scheduled
       maintLength = dayjs
         .duration(maintEnd.diff(nextMaintTime))
@@ -44,7 +45,7 @@ async function timersMessage(client) {
       mainList = `Maintenance will begin in ${parseTimeUntil(
         nextMaintTime
       )} and last for ${maintLength}`;
-    } else if (config[0].isMaintenance) {
+    } else if (config.isMaintenance) {
       //maint is now
       mainList = `Maintenance will end in ${parseTimeUntil(maintEnd)}`;
     }
@@ -83,12 +84,12 @@ async function timersMessage(client) {
     if (!boss.clearTime || activeList.includes(boss.shortName)) continue;
 
     let name = boss.shortName;
+    const currentTime = dayjs().utc();
     const windowOpen = dayjs(boss.windowStart).utc();
     const windowClose = dayjs(boss.windowEnd).utc();
-    const now = dayjs().utc();
 
     //Not in window
-    if (now.isBefore(windowOpen)) {
+    if (currentTime.isBefore(windowOpen)) {
       const timeUntil = parseTimeUntil(windowOpen);
       if (name.length < 17) {
         name = name.padEnd(
@@ -97,7 +98,10 @@ async function timersMessage(client) {
       }
 
       notInWindowList += `${name} ${timeUntil} until window opens \n`;
-    } else if (now.isAfter(windowOpen) && now.isBefore(windowClose)) {
+    } else if (
+      currentTime.isAfter(windowOpen) &&
+      currentTime.isBefore(windowClose)
+    ) {
       const timeUntil = parseTimeUntil(windowClose);
       if (name.length < 17) {
         name = name.padEnd(
@@ -193,7 +197,30 @@ async function timersMessage(client) {
         logger("ERROR", `Failed to delete message.`);
       }
     }, 1000);
-  }, 59450);
+  }, 59550);
+}
+
+async function getMaintenanceInfo() {
+  if (!config[0].maintStart) return config[0];
+
+  const currentTime = dayjs().utc();
+  const maintStart = dayjs(config[0].maintStart).utc();
+  const maintEnd = dayjs(config[0].maintEnd).utc();
+
+  //Check if maintenance mode is not set and current time is past maintenance start time.
+  if (!config[0].isMaintenance) {
+    //Set bot to maintenance mode and adjust timers
+    if (currentTime.isAfter(maintStart) && currentTime.isBefore(maintEnd)) {
+      config[0] = await updateIsMaintenance(true);
+    }
+  } else {
+    //End maintenance mode
+    if (currentTime.isSame(maintEnd) || currentTime.isAfter(maintEnd)) {
+      config[0] = await updateIsMaintenance(false);
+    }
+  }
+
+  return config[0];
 }
 
 module.exports = { timersMessage, timerMessageId };

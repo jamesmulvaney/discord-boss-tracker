@@ -33,6 +33,34 @@ async function updateClearTime(shortName, windowCooldown, time) {
   return boss;
 }
 
+async function maintenanceAdjustment(maintEnd) {
+  const endTime = dayjs(maintEnd).utc();
+  const windowStart = endTime.add(5, "hours").toDate();
+  const windowEnd = endTime.add(12, "hours").toDate();
+
+  await prisma.boss.updateMany({
+    where: {
+      AND: [
+        {
+          isWorldBoss: {
+            equals: false,
+          },
+        },
+        {
+          shortName: {
+            not: "Shadow",
+          },
+        },
+      ],
+    },
+    data: {
+      windowStart,
+      windowEnd,
+    },
+  });
+}
+
 module.exports = {
   updateClearTime,
+  maintenanceAdjustment,
 };
