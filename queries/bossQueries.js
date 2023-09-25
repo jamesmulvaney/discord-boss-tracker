@@ -67,8 +67,8 @@ async function freshFieldBossStatus() {
 //Update a boss's window based on clear time
 async function setWindowTimes(shortName, windowCooldown, cleared) {
   const clearTime = cleared.toDate();
-  let windowStart = clearTime.add(windowCooldown, "minutes").toDate();
-  let windowEnd = clearTime.add(windowCooldown + 420, "minutes").toDate();
+  let windowStart = cleared.add(windowCooldown, "minutes").toDate();
+  let windowEnd = cleared.add(windowCooldown + 420, "minutes").toDate();
 
   if (config[0].maintStart) {
     if (dayjs(windowStart).isAfter(dayjs(config[0].maintStart).utc())) {

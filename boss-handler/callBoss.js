@@ -1,6 +1,7 @@
 const {
   freshFieldBossStatus,
   getUberPartner,
+  updateStatus,
 } = require("../queries/bossQueries");
 const { freshWorldBossStatus } = require("../utils/freshWorldBossStatus");
 const { activeBosses } = require("./activeBosses");
