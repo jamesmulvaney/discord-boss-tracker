@@ -18,7 +18,7 @@ Learn more about this project [here!](https://www.jamesmulvaney.co.uk/projects/d
 
 * Discord Developer Application. A guide for setting one up can be found [here](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot)
 * PostgreSQL database
-* [Google Calendar API JSON file.](https://developers.google.com/calendar/api/quickstart/nodejs#authorize_credentials_for_a_desktop_application)
+* Google Calendar Service Account JSON file. [Follow this guide](https://developers.google.com/calendar/api/quickstart/nodejs#authorize_credentials_for_a_desktop_application) until you get your JSON credentials file.
     - The calendar should reflect the world boss schedule found [here](https://www.naeu.playblackdesert.com/en-US/Wiki?wikiNo=83).
     - Event summary should be the boss's short name. Example: Offin Tett's short name would be `Offin`
 * Pm2 for the restart feature
