@@ -1,7 +1,7 @@
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const { updateMaintenanceTime } = require("../queries/setConfig");
-const { config } = require("../timers/config");
+const { config } = require("../config");
 dayjs.extend(utc);
 
 module.exports = {

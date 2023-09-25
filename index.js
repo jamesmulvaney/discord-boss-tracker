@@ -2,9 +2,11 @@ const dotenv = require("dotenv");
 const { Client, Collection, Events, GatewayIntentBits } = require("discord.js");
 const { readdirSync } = require("fs");
 const { checkMessage } = require("./boss-handler/handleMessages");
-const { scheduleNotification } = require("./timers/scheduleNotification");
+const {
+  scheduleNotification,
+} = require("./boss-schedule/scheduleNotification");
 const { timersMessage } = require("./timers/timersMessage");
-const { config } = require("./timers/config");
+const { config } = require("./config");
 const { getConfig } = require("./queries/getConfig");
 const { logger } = require("./utils/logger");
 

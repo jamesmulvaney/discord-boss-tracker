@@ -1,12 +1,15 @@
-const dayjs = require("dayjs");
-const utc = require("dayjs/plugin/utc");
 const { createChart } = require("../canvas");
 const { parseUptime, parseForceDespawnTime } = require("../parseUptime");
 const { activeBosses } = require("../activeBosses");
-const cron = require("node-cron");
-const { updateStatus, updateSpawnTime } = require("../../queries/updateStatus");
-const { updateClearTime } = require("../../queries/updateClearTime");
 const { logger } = require("../../utils/logger");
+const {
+  setWindowTimes,
+  updateStatus,
+  setLastSpawn,
+} = require("../../queries/bossQueries");
+const cron = require("node-cron");
+const dayjs = require("dayjs");
+const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 
 class Boss {
@@ -51,7 +54,7 @@ class Boss {
 
     if (!this.isRevived) {
       //Update lastSpawn in the database
-      updateSpawnTime(this.bossInfo.id, this.startTime.format());
+      setLastSpawn(this.bossInfo.id, this.startTime.format());
 
       //Start forceClear cron task
       const clearTime = this.startTime.add(
@@ -469,13 +472,13 @@ class Boss {
               this.startTime.add(this.bossInfo.forceDespawnTime, "minutes")
             ))
       ) {
-        await updateClearTime(
+        await setWindowTimes(
           this.bossInfo.shortName,
           this.bossInfo.windowCooldown,
           this.startTime.add(this.bossInfo.forceDespawnTime, "minutes")
         );
       } else {
-        await updateClearTime(
+        await setWindowTimes(
           this.bossInfo.shortName,
           this.bossInfo.windowCooldown,
           dayjs().utc()

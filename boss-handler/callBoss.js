@@ -1,9 +1,8 @@
 const {
-  setFreshStatus,
-  getFreshWorldStatus,
-  getFreshFieldStatus,
-} = require("../queries/getFreshStatus");
-const { getUberPartner } = require("../queries/getUberPartner");
+  freshFieldBossStatus,
+  getUberPartner,
+} = require("../queries/bossQueries");
+const { freshWorldBossStatus } = require("../utils/freshWorldBossStatus");
 const { activeBosses } = require("./activeBosses");
 const { Boss } = require("./class/Boss");
 const { findBossByAlias } = require("./findBossByAlias");
@@ -22,11 +21,11 @@ async function callBoss(msg, args) {
   //Get a fresh status
   let freshStatus;
   if (!boss.isWorldBoss) {
-    freshStatus = await getFreshFieldStatus();
-    setFreshStatus(boss.name, freshStatus);
+    freshStatus = await freshFieldBossStatus();
+    updateStatus(boss.id, freshStatus);
   } else {
-    freshStatus = getFreshWorldStatus();
-    setFreshStatus(boss.name, freshStatus);
+    freshStatus = freshWorldBossStatus();
+    updateStatus(boss.id, freshStatus);
   }
 
   //Check if uber

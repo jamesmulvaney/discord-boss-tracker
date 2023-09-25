@@ -1,16 +1,13 @@
-const dayjs = require("dayjs");
-const utc = require("dayjs/plugin/utc");
-const cron = require("node-cron");
 const { parseCalendar } = require("./parseCalendar");
-const {
-  getFreshFieldStatus,
-  setFreshStatus,
-  getFreshWorldStatus,
-} = require("../queries/getFreshStatus");
 const { activeBosses } = require("../boss-handler/activeBosses");
 const { Boss } = require("../boss-handler/class/Boss");
-const { config } = require("./config");
+const { config } = require("../config");
 const { logger } = require("../utils/logger");
+const { freshWorldBossStatus } = require("../utils/freshWorldBossStatus");
+const cron = require("node-cron");
+const dayjs = require("dayjs");
+const utc = require("dayjs/plugin/utc");
+const { freshFieldBossStatus } = require("../queries/bossQueries");
 dayjs.extend(utc);
 
 async function scheduleNotification(client) {
@@ -105,11 +102,11 @@ async function scheduleNotification(client) {
           async () => {
             let freshStatus;
             if (!boss.isWorldBoss) {
-              freshStatus = await getFreshFieldStatus();
-              setFreshStatus(boss.name, freshStatus);
+              freshStatus = await freshFieldBossStatus();
+              updateStatus(boss.id, freshStatus);
             } else {
-              freshStatus = getFreshWorldStatus();
-              setFreshStatus(boss.name, freshStatus);
+              freshStatus = freshWorldBossStatus();
+              updateStatus(boss.id, freshStatus);
             }
             const newBoss = new Boss(
               boss,

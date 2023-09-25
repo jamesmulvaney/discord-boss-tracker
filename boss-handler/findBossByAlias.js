@@ -1,4 +1,4 @@
-const { staticBossList } = require("../queries/getBossList");
+const { staticBossList } = require("../queries/bossQueries");
 const { activeBosses } = require("./activeBosses");
 
 async function findBossByAlias(alias) {

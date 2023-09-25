@@ -1,7 +1,7 @@
+const { fetchCalendar } = require("./getCalendar");
+const { setNextSpawn } = require("../queries/bossQueries");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
-const { updateNextSpawn } = require("../queries/updateNextSpawn");
-const { fetchCalendar } = require("./getCalendar");
 dayjs.extend(utc);
 
 async function parseCalendar() {
@@ -12,7 +12,7 @@ async function parseCalendar() {
   for (const entry of calendar) {
     if (!completed.includes(entry.summary)) {
       const startTime = dayjs(entry.start.dateTime).utc().format();
-      const updatedBoss = await updateNextSpawn(entry.summary, startTime);
+      const updatedBoss = await setNextSpawn(entry.summary, startTime);
 
       schedule.push(updatedBoss);
       completed.push(entry.summary);

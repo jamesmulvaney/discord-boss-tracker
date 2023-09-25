@@ -1,8 +1,7 @@
-const { config } = require("./config");
+const { config } = require("../config");
 const { activeBosses } = require("../boss-handler/activeBosses");
 const { parseElapsed, parseTimeUntil } = require("../boss-handler/parseUptime");
-const { getBossSchedule } = require("../queries/getBossSchedule");
-const { getFieldBossList } = require("../queries/getFieldBoss");
+const { getFieldBossList, getBossSchedule } = require("../queries/bossQueries");
 const { logger } = require("../utils/logger");
 const { updateIsMaintenance } = require("../queries/setConfig");
 const dayjs = require("dayjs");

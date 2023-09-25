@@ -1,5 +1,5 @@
 const { prisma } = require("../db");
-const { maintenanceAdjustment } = require("./updateClearTime");
+const { setPostMaintWindow } = require("./bossQueries");
 
 async function updateIsMaintenance(isMaintenance) {
   let config;
@@ -12,7 +12,7 @@ async function updateIsMaintenance(isMaintenance) {
       },
     });
 
-    await maintenanceAdjustment(config.maintEnd);
+    await setPostMaintWindow(config.maintEnd);
   } else {
     config = await prisma.config.update({
       where: { id: 1 },

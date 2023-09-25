@@ -1,5 +1,5 @@
 const { findBossByAlias } = require("../boss-handler/findBossByAlias");
-const { updateClearTime } = require("../queries/updateClearTime");
+const { setWindowTimes } = require("../queries/bossQueries");
 const { logger } = require("../utils/logger");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
@@ -37,7 +37,7 @@ module.exports = {
           }
 
           try {
-            await updateClearTime(boss.shortName, boss.windowCooldown, time);
+            await setWindowTimes(boss.shortName, boss.windowCooldown, time);
 
             msg.reply(
               `${boss.shortName} clear time adjusted to \`${time.format(

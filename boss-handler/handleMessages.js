@@ -1,4 +1,3 @@
-const { getBossList } = require("../queries/getBossList");
 const { logger } = require("../utils/logger");
 const { activeBosses } = require("./activeBosses");
 const { Boss } = require("./class/Boss");
