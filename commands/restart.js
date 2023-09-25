@@ -11,10 +11,12 @@ module.exports = {
         await msg.reply({
           content: "Restarting bot, please wait a few seconds...",
         });
-        await timerMessageId
-          .shift()
-          .delete()
-          .catch((err) => logger("ERROR", `Failed to delete message.`));
+
+        try {
+          await timerMessageId.shift().delete();
+        } catch (err) {
+          logger("ERROR", `Failed to delete message.`);
+        }
 
         logger("LOG", `Bot restarted by ${msg.author.tag}.`);
 

@@ -186,10 +186,12 @@ async function timersMessage(client) {
     //Delete old timer 1 second after the new timer is sent.
     //Prevents flashing a blank channel
     setTimeout(() => {
-      const toDelete = timerMessageId.shift();
-      toDelete
-        .delete()
-        .catch((err) => logger("ERROR", `Failed to delete message.`));
+      try {
+        const toDelete = timerMessageId.shift();
+        toDelete.delete();
+      } catch (err) {
+        logger("ERROR", `Failed to delete message.`);
+      }
     }, 1000);
   }, 59450);
 }
