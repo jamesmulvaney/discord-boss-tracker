@@ -39,19 +39,7 @@ async function updateMaintenanceTime(maintStart, maintEnd) {
   return config;
 }
 
-async function updateisSeason(isSeason) {
-  const config = await prisma.config.update({
-    where: { id: 1 },
-    data: {
-      isSeason,
-    },
-  });
-
-  return config;
-}
-
 module.exports = {
   updateIsMaintenance,
   updateMaintenanceTime,
-  updateisSeason,
 };
