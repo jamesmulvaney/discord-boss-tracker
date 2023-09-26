@@ -4,10 +4,13 @@ const { Boss } = require("../boss-handler/class/Boss");
 const { config } = require("../config");
 const { logger } = require("../utils/logger");
 const { freshWorldBossStatus } = require("../utils/freshWorldBossStatus");
+const {
+  freshFieldBossStatus,
+  updateStatus,
+} = require("../queries/bossQueries");
 const cron = require("node-cron");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
-const { freshFieldBossStatus } = require("../queries/bossQueries");
 dayjs.extend(utc);
 
 async function scheduleNotification(client) {
@@ -101,6 +104,7 @@ async function scheduleNotification(client) {
           } *`,
           async () => {
             let freshStatus;
+
             if (!boss.isWorldBoss) {
               freshStatus = await freshFieldBossStatus();
               updateStatus(boss.id, freshStatus);
@@ -108,17 +112,19 @@ async function scheduleNotification(client) {
               freshStatus = freshWorldBossStatus();
               updateStatus(boss.id, freshStatus);
             }
-            const newBoss = new Boss(
-              boss,
-              dayjs().utc().format(),
-              freshStatus,
-              true,
-              false,
-              client,
-              true,
-              false
+
+            activeBosses.push(
+              new Boss(
+                boss,
+                dayjs().utc().format(),
+                freshStatus,
+                true,
+                false,
+                client,
+                true,
+                false
+              )
             );
-            activeBosses.push(newBoss);
           },
           {
             timezone: "Etc/UTC",

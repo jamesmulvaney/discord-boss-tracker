@@ -1,20 +1,21 @@
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
-const { setMaintenanceTime } = require("../queries/setConfig");
 const { config } = require("../config");
+const { setPostMaintWindow } = require("../queries/bossQueries");
+const { updateMaintenanceEnd } = require("../queries/setConfig");
 dayjs.extend(utc);
 
 module.exports = {
-  name: "setmaint",
+  name: "adjustmaint",
   description:
-    "Set maintenance time. Syntax: `!setmaint <startTime> <endTime>`",
+    "Adjust a maintenance's end time. Syntax: `!adjustmaint <endTime>`",
   guildOnly: true,
   async execute(msg, args) {
     if (msg.channelId === process.env.MOD_CHANNEL_ID) {
       if (msg.member?.roles.cache.has(process.env.MOD_ROLE_ID)) {
-        if (args.length === 2) {
+        if (args.length === 1) {
           //Validation
-          if (!dayjs(args[0]).isValid() || !dayjs(args[1]).isValid()) {
+          if (!dayjs(args[0]).isValid()) {
             msg.reply(
               `Invalid time string provided. Current time string: \`${dayjs()
                 .utc()
@@ -24,18 +25,17 @@ module.exports = {
             return;
           }
 
-          const startTime = dayjs(args[0]).utc();
-          const endTime = dayjs(args[1]).utc();
+          const endTime = dayjs(args[0]).utc();
 
           try {
-            const newConfig = await setMaintenanceTime(
-              startTime.toDate(),
-              endTime.toDate()
-            );
-            config.pop();
-            config.push(newConfig);
+            const newConfig = await updateMaintenanceEnd(endTime.toDate());
+
+            if (newConfig.isMaintenance) await setPostMaintWindow(args[0]);
+
+            config[0] = newConfig;
+
             msg.reply(
-              `Maintenance set. Starting \`${startTime.toISOString()}\` and ending \`${endTime.toISOString()}\`.`
+              `Maintenance adjusted to end at \`${endTime.toISOString()}\`.`
             );
           } catch (err) {
             console.error(err);

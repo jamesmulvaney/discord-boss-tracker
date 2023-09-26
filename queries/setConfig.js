@@ -27,7 +27,7 @@ async function updateIsMaintenance(isMaintenance) {
   return config;
 }
 
-async function updateMaintenanceTime(maintStart, maintEnd) {
+async function setMaintenanceTime(maintStart, maintEnd) {
   const config = await prisma.config.update({
     where: { id: 1 },
     data: {
@@ -39,7 +39,19 @@ async function updateMaintenanceTime(maintStart, maintEnd) {
   return config;
 }
 
+async function updateMaintenanceEnd(maintEnd) {
+  const config = await prisma.config.update({
+    where: { id: 1 },
+    data: {
+      maintEnd,
+    },
+  });
+
+  return config;
+}
+
 module.exports = {
   updateIsMaintenance,
-  updateMaintenanceTime,
+  setMaintenanceTime,
+  updateMaintenanceEnd,
 };
