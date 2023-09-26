@@ -81,11 +81,9 @@ async function scheduleNotification(client) {
             notifHook.send({
               content: `${boss.shortName} spawns in ~${
                 boss.shortName === "Vell" ? "30" : reminderTime
-              } minutes. <#${
-                process.env.STATUS_CHANNEL_ID
-              }> @everyone \`${dayjs()
-                .utc()
-                .format("YYYY/MM/DD HH:mm:ss")} UTC\``,
+              } minutes. <#${process.env.STATUS_CHANNEL_ID}> ${
+                boss.roleId && `<@&${boss.roleId}> `
+              }\`${dayjs().utc().format("YYYY/MM/DD HH:mm:ss")} UTC\``,
               username: `${boss.name}`,
               avatarURL: boss.avatar,
             });

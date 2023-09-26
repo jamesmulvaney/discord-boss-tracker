@@ -39,7 +39,6 @@ model Boss {
   lastSpawn        DateTime?
   isWorldBoss      Boolean
   status           Json[]
-  inWindow         Boolean?
   windowStart      DateTime?
   windowEnd        DateTime?
   windowCooldown   Int?
@@ -48,4 +47,5 @@ model Boss {
   forceClearTime   Int       @default(31)
   isUber           Boolean   @default(false)
   uberOf           Int?
+  roleId           String? //ID of the role that should be pinged on spawn.
 }

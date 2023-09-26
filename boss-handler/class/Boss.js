@@ -162,7 +162,9 @@ class Boss {
     notifHook.send({
       content: `${this.bossInfo.name} has spawned. <#${
         process.env.STATUS_CHANNEL_ID
-      }> @everyone \`${dayjs().utc().format("YYYY/MM/DD HH:mm:ss")} UTC\``,
+      }> ${this.bossInfo.roleId && `<@&${this.bossInfo.roleId}> `}\`${dayjs()
+        .utc()
+        .format("YYYY/MM/DD HH:mm:ss")} UTC\``,
       username: `${this.bossInfo.name}`,
       avatarURL: this.bossInfo.avatar,
     });
