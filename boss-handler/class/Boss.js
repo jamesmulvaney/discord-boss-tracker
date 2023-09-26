@@ -498,6 +498,7 @@ class Boss {
     this.bossInfo.aliases += `|${uberInfo.aliases}`;
     this.bossInfo.info = uberInfo.info;
     this.bossInfo.avatar = uberInfo.avatar;
+    this.bossInfo.roleId = uberInfo.roleId;
     this.calledBy = calledBy;
 
     this.statusHandler();
