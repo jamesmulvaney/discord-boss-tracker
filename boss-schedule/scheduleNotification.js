@@ -136,9 +136,11 @@ async function scheduleNotification(client) {
 
   //Cron for reschedule
   cron.schedule(
-    `${spawnsAt.second()} ${
-      spawnsAt.minute() + 1
-    } ${spawnsAt.hour()} ${spawnsAt.date()} ${spawnsAt.month() + 1} *`,
+    `${
+      spawnsAt.second() + 1
+    } ${spawnsAt.minute()} ${spawnsAt.hour()} ${spawnsAt.date()} ${
+      spawnsAt.month() + 1
+    } *`,
     () => {
       scheduleNotification(client);
     },

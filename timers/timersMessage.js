@@ -196,7 +196,7 @@ async function timersMessage(client) {
         logger("ERROR", `Failed to delete message.`);
       }
     }, 1000);
-  }, 59550);
+  }, 59450);
 }
 
 async function getMaintenanceInfo() {
