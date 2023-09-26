@@ -34,9 +34,14 @@ async function getFieldBossList() {
     where: {
       isWorldBoss: false,
     },
-    orderBy: {
-      windowStart: { sort: "asc", nulls: "last" },
-    },
+    orderBy: [
+      {
+        windowStart: "asc",
+      },
+      {
+        shortName: "asc",
+      },
+    ],
   });
 
   return bosses;
