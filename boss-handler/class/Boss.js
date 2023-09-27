@@ -7,6 +7,7 @@ const {
   updateStatus,
   setLastSpawn,
 } = require("../../queries/bossQueries");
+const { WebhookClient } = require("discord.js");
 const cron = require("node-cron");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
@@ -16,6 +17,10 @@ class Boss {
   botMessages = [];
   startTime;
   refreshTime = [];
+  statusWebhook = new WebhookClient({
+    id: process.env.STATUS_HOOK_ID,
+    token: process.env.STATUS_HOOK_TOKEN,
+  });
 
   constructor(
     bossInfo,
@@ -77,12 +82,8 @@ class Boss {
 
           logger("LOG", `${this.bossInfo.name} auto-cleared.`);
 
-          for (let i = 0; i < activeBosses.length; i++) {
-            if (activeBosses[i].bossInfo.id === this.bossInfo.id) {
-              activeBosses.splice(i, 1);
-              break;
-            }
-          }
+          this.statusWebhook.destroy();
+          this.removeFromActiveBosses();
         }
       );
     }
@@ -93,18 +94,14 @@ class Boss {
     //Remove the boss from activeBosses array if it is cleared.
     if (!this.isActive) {
       if (!this.isRevived) this.forceClearTask.stop();
-      //clearTimeout(this.refreshTime.shift());
-      for (let i = 0; i < activeBosses.length; i++) {
-        if (activeBosses[i].bossInfo.id === this.bossInfo.id) {
-          activeBosses.splice(i, 1);
-          break;
-        }
-      }
+      this.statusWebhook.destroy();
+      this.removeFromActiveBosses();
 
       return;
     }
 
     if (this.isHidden) return;
+
     if (
       !dayjs()
         .utc()
@@ -118,12 +115,7 @@ class Boss {
     const uptime = parseUptime(this.startTime, true);
     const chart = await createChart(this);
 
-    const statusHook = await this.client.fetchWebhook(
-      process.env.STATUS_HOOK_ID,
-      process.env.STATUS_HOOK_TOKEN
-    );
-
-    statusHook
+    this.statusWebhook
       .send({
         content: dayjs
           .utc()
@@ -137,29 +129,30 @@ class Boss {
         files: [chart],
       })
       .then((message) => {
-        this.botMessages.push(message);
+        this.botMessages.push(message.id);
       });
 
     //Refresh chart if message has not been send within 60 seconds
     const refreshRef = setTimeout(() => {
       this.statusHandler();
+
       setTimeout(() => {
         if (!this.isActive) return;
         this.deleteLastMessage();
       }, 1000);
-    }, 59800);
+    }, 59980);
 
     this.refreshTime.push(refreshRef);
   }
 
   //Send a notification to users telling them the boss has spawned
   async sendNotif() {
-    const notifHook = await this.client.fetchWebhook(
-      process.env.NOTIF_HOOK_ID,
-      process.env.NOTIF_HOOK_TOKEN
-    );
+    const notificationWebhook = new WebhookClient({
+      id: process.env.NOTIF_HOOK_ID,
+      token: process.env.NOTIF_HOOK_TOKEN,
+    });
 
-    notifHook.send({
+    notificationWebhook.send({
       content: `${this.bossInfo.name} has spawned. <#${
         process.env.STATUS_CHANNEL_ID
       }> ${this.bossInfo.roleId && `<@&${this.bossInfo.roleId}> `}\`${dayjs()
@@ -168,6 +161,8 @@ class Boss {
       username: `${this.bossInfo.name}`,
       avatarURL: this.bossInfo.avatar,
     });
+
+    notificationWebhook.destroy();
   }
 
   //Set the boss' health
@@ -525,11 +520,20 @@ class Boss {
   }
 
   deleteLastMessage() {
-    this.botMessages
-      .shift()
-      .delete()
-      .catch((err) => logger("ERROR", `Failed to delete message.`));
+    this.statusWebhook.deleteMessage(this.botMessages.shift()).catch((err) => {
+      logger("ERROR", `Failed to delete message.`);
+    });
+
     clearTimeout(this.refreshTime.shift());
+  }
+
+  removeFromActiveBosses() {
+    for (let i = 0; i < activeBosses.length; i++) {
+      if (activeBosses[i].bossInfo.id === this.bossInfo.id) {
+        activeBosses.splice(i, 1);
+        break;
+      }
+    }
   }
 }
 

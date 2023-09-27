@@ -4,6 +4,7 @@ const { parseElapsed, parseTimeUntil } = require("../boss-handler/parseUptime");
 const { getFieldBossList, getBossSchedule } = require("../queries/bossQueries");
 const { logger } = require("../utils/logger");
 const { updateIsMaintenance } = require("../queries/setConfig");
+const { WebhookClient } = require("discord.js");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const duration = require("dayjs/plugin/duration");
@@ -23,11 +24,10 @@ async function timersMessage(client) {
   let inWindowList = "";
   let scheduleList = "";
 
-  //Timer hook
-  const timerHook = await client.fetchWebhook(
-    process.env.TIMER_HOOK_ID,
-    process.env.TIMER_HOOK_TOKEN
-  );
+  const timersWebhook = new WebhookClient({
+    id: process.env.TIMER_HOOK_ID,
+    token: process.env.TIMER_HOOK_TOKEN,
+  });
 
   //Maintenance Information
   if (config.maintStart) {
@@ -163,7 +163,8 @@ async function timersMessage(client) {
   if (notInWindowList) embedArray.push(notInWindowEmbed);
   if (scheduleList) embedArray.push(scheduleEmbed);
 
-  await timerHook
+  //Send timers via webhook
+  timersWebhook
     .send({
       content: "",
       username: "Timers",
@@ -171,28 +172,23 @@ async function timersMessage(client) {
       embeds: embedArray,
     })
     .then((message) => {
-      timerMessageId.push(message);
+      timerMessageId.push(message.id);
     })
     .catch((err) => {
       logger("ERROR", `${err}`);
-
-      timersMessage(client);
     });
 
   setTimeout(() => {
+    //Resend timers
     timersMessage(client);
 
-    //Delete old timer 1 second after the new timer is sent.
-    //Prevents flashing a blank channel
+    //Delete previous message
     setTimeout(() => {
-      try {
-        const toDelete = timerMessageId.shift();
-        toDelete.delete();
-      } catch (err) {
+      timersWebhook.deleteMessage(timerMessageId.shift()).catch((err) => {
         logger("ERROR", `Failed to delete message.`);
-      }
+      });
     }, 1000);
-  }, 59450);
+  }, 60000);
 }
 
 async function getMaintenanceInfo() {

@@ -8,6 +8,7 @@ const {
   freshFieldBossStatus,
   updateStatus,
 } = require("../queries/bossQueries");
+const { WebhookClient } = require("discord.js");
 const cron = require("node-cron");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
@@ -73,12 +74,12 @@ async function scheduleNotification(client) {
             reminderAt.month() + 1
           } *`,
           async () => {
-            const notifHook = await client.fetchWebhook(
-              process.env.NOTIF_HOOK_ID,
-              process.env.NOTIF_HOOK_TOKEN
-            );
+            const notificationWebhook = new WebhookClient({
+              id: process.env.NOTIF_HOOK_ID,
+              token: process.env.NOTIF_HOOK_TOKEN,
+            });
 
-            notifHook.send({
+            notificationWebhook.send({
               content: `${boss.shortName} spawns in ~${
                 boss.shortName === "Vell" ? "30" : reminderTime
               } minutes. <#${process.env.STATUS_CHANNEL_ID}> ${

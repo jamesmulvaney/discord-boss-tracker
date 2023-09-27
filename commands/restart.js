@@ -1,3 +1,4 @@
+const { WebhookClient } = require("discord.js");
 const { timerMessageId } = require("../timers/timersMessage");
 const { logger } = require("../utils/logger");
 
@@ -12,11 +13,18 @@ module.exports = {
           content: "Restarting bot, please wait a few seconds...",
         });
 
-        try {
-          await timerMessageId.shift().delete();
-        } catch (err) {
-          logger("ERROR", `Failed to delete message.`);
-        }
+        //Delete last timers message
+        const timersWebhook = new WebhookClient({
+          id: process.env.TIMER_HOOK_ID,
+          token: process.env.TIMER_HOOK_TOKEN,
+        });
+
+        await timersWebhook
+          .deleteMessage(timerMessageId.shift())
+          .catch((err) => {
+            logger("ERROR", `Failed to delete message.`);
+            logger("ERROR", `${err}`);
+          });
 
         logger("LOG", `Bot restarted by ${msg.author.tag}.`);
 
