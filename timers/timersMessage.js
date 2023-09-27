@@ -52,72 +52,68 @@ async function timersMessage(client) {
 
   //Sort active bosses
   for (const activeBoss of activeBosses) {
-    const uptime = parseElapsed(activeBoss.startTime);
-    let name = activeBoss.bossInfo.shortName;
+    const time = parseElapsed(activeBoss.startTime);
+    const name = nameWithPadding(activeBoss.bossInfo.shortName, time.length);
 
-    if (name.length < 17) {
-      name = name.padEnd(name.length + (18 - (name.length + uptime.length)));
-    }
-
-    activeList += `${name} ${uptime} elapsed            \n`;
+    activeList += `${name} ${time} elapsed            \n`;
   }
 
   //Sort schedule
   for (const boss of schedule) {
-    if (!boss.nextSpawn || activeList.includes(boss.shortName)) continue;
+    if (
+      ((!boss.isWorldBoss || boss.isUber) && !boss.nextSpawn) ||
+      activeList.includes(boss.shortName)
+    )
+      continue;
 
-    const timeUntil = parseTimeUntil(boss.nextSpawn);
-    let name = boss.shortName;
+    const time = boss.nextSpawn ? parseTimeUntil(boss.nextSpawn) : "??";
+    const name = nameWithPadding(boss.shortName, time.length);
 
-    if (name.length < 17) {
-      name = name.padEnd(name.length + (18 - (name.length + timeUntil.length)));
-    }
-
-    scheduleList += `${name} ${timeUntil} until ${
+    scheduleList += `${name} ${time} until ${
       boss.name === "Vell" ? "30m warning " : "spawn        "
     }\n`;
   }
 
   //Sort field boss windows
   for (const boss of fieldBosses) {
-    if (!boss.clearTime || activeList.includes(boss.shortName)) continue;
+    if (
+      boss.windowCooldown === 0 ||
+      boss.nextSpawn ||
+      activeList.includes(boss.shortName)
+    )
+      continue;
 
-    let name = boss.shortName;
+    //If no window set
+    if (!boss.windowStart) {
+      const name = nameWithPadding(boss.shortName, 2);
+
+      notInWindowList += `${name} ?? until window opens \n`;
+      continue;
+    }
+
     const currentTime = dayjs().utc();
     const windowOpen = dayjs(boss.windowStart).utc();
     const windowClose = dayjs(boss.windowEnd).utc();
 
     //Not in window
     if (currentTime.isBefore(windowOpen)) {
-      const timeUntil = parseTimeUntil(windowOpen);
-      if (name.length < 17) {
-        name = name.padEnd(
-          name.length + (18 - (name.length + timeUntil.length))
-        );
-      }
+      const time = parseTimeUntil(windowOpen);
+      const name = nameWithPadding(boss.shortName, time.length);
 
-      notInWindowList += `${name} ${timeUntil} until window opens \n`;
+      notInWindowList += `${name} ${time} until window opens \n`;
     } else if (
       currentTime.isAfter(windowOpen) &&
       currentTime.isBefore(windowClose)
     ) {
-      const timeUntil = parseTimeUntil(windowClose);
-      if (name.length < 17) {
-        name = name.padEnd(
-          name.length + (18 - (name.length + timeUntil.length))
-        );
-      }
+      const time = parseTimeUntil(windowClose);
+      const name = nameWithPadding(boss.shortName, time.length);
 
-      inWindowList += `${name} ${timeUntil} until window closes\n`;
+      inWindowList += `${name} ${time} until window closes\n`;
     } else {
-      const timeUntil = parseElapsed(windowClose);
-      if (name.length < 17) {
-        name = name.padEnd(
-          name.length + (18 - (name.length + timeUntil.length))
-        );
-      }
+      const time = parseElapsed(windowClose);
+      const name = nameWithPadding(boss.shortName, time.length);
 
-      inWindowList += `${name} ${timeUntil} late               \n`;
+      inWindowList += `${name} ${time} late               \n`;
     }
   }
 
@@ -220,6 +216,14 @@ async function getMaintenanceInfo() {
   }
 
   return config[0];
+}
+
+function nameWithPadding(name, timeLength) {
+  if (name.length < 17) {
+    return name.padEnd(name.length + (18 - (name.length + timeLength)));
+  }
+
+  return name;
 }
 
 module.exports = { timersMessage, timerMessageId };
