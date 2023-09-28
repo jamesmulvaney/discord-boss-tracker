@@ -132,6 +132,8 @@ class Boss {
         this.botMessages.push(message.id);
       });
 
+    const refreshTime = this.bossInfo.isWorldBoss ? 60000 : 59980;
+
     //Refresh chart if message has not been send within 60 seconds
     const refreshRef = setTimeout(() => {
       this.statusHandler();
@@ -140,7 +142,7 @@ class Boss {
         if (!this.isActive) return;
         this.deleteLastMessage();
       }, 1000);
-    }, 59980);
+    }, refreshTime);
 
     this.refreshTime.push(refreshRef);
   }
