@@ -1,5 +1,6 @@
 const { Events } = require("discord.js");
 const { logger } = require("../utils/logger");
+const { checkMessage } = require("../boss-handler/handleMessages");
 
 module.exports = {
   name: Events.MessageCreate,
@@ -13,7 +14,7 @@ module.exports = {
         .substring(1)
         .split(/\s+/);
 
-      const command = client.commands.get(commandName);
+      const command = message.client.commands.get(commandName);
 
       if (!command) return;
 

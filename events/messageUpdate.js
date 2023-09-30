@@ -1,5 +1,5 @@
 const { Events } = require("discord.js");
-const { logger } = require("../utils/logger");
+const { checkMessage } = require("../boss-handler/handleMessages");
 
 module.exports = {
   name: Events.MessageUpdate,
