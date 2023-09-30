@@ -1,7 +1,7 @@
 const { createChart } = require("../canvas");
 const { parseUptime, parseForceDespawnTime } = require("../parseUptime");
 const { activeBosses } = require("../activeBosses");
-const { logger } = require("../../utils/logger");
+const Logger = require("../../utils/logger");
 const {
   setWindowTimes,
   updateStatus,
@@ -43,11 +43,10 @@ class Boss {
     this.isRevived = isRevived;
     this.isHidden = false;
 
-    logger(
-      "LOG",
-      `${this.bossInfo.shortName} spawned by ${
-        this.calledBy ? this.calledBy.tag : "SERVER"
-      }.`
+    Logger.info(
+      `${this.bossInfo.shortName} ${
+        this.isRevived ? "revived" : "spawned"
+      } by ${this.calledBy ? this.calledBy.tag : "SERVER"}.`
     );
 
     this.statusHandler();
@@ -67,8 +66,7 @@ class Boss {
         "minutes"
       );
 
-      logger(
-        "LOG",
+      Logger.log(
         `${this.bossInfo.shortName} auto-clear time set to ${clearTime.format(
           "HH:mm:ss"
         )}.`
@@ -80,7 +78,7 @@ class Boss {
           if (!this.isHidden) this.deleteLastMessage();
           this.clearBoss("force");
 
-          logger("LOG", `${this.bossInfo.name} auto-cleared.`);
+          Logger.log(`${this.bossInfo.name} auto-cleared.`);
 
           this.statusWebhook.destroy();
           this.removeFromActiveBosses();
@@ -523,7 +521,7 @@ class Boss {
 
   deleteLastMessage() {
     this.statusWebhook.deleteMessage(this.botMessages.shift()).catch((err) => {
-      logger("ERROR", `Failed to delete message.`);
+      Logger.error(`Failed to delete message.`);
     });
 
     clearTimeout(this.refreshTime.shift());

@@ -1,13 +1,32 @@
+const colors = require("@colors/colors");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 
-function logger(type, message) {
-  const currentTime = dayjs().utc().format("HH:mm:ss.SSS");
+module.exports = class Logger {
+  static time() {
+    return dayjs().utc().format("HH:mm:ss.SSS");
+  }
 
-  console.log(`[${currentTime}][${type}] ${message}`);
-}
+  static log(message) {
+    console.log(`[${this.time()}] LOG | ${message}`.gray);
+  }
 
-module.exports = {
-  logger,
+  static info(message) {
+    console.log(`[${this.time()}] INFO | ${message}`.brightBlue);
+  }
+
+  static debug(message) {
+    console.log(`[${this.time()}] DEBUG | ${message}`.cyan);
+  }
+
+  static warn(message) {
+    console.log(`[${this.time()}] WARN | ${message}`.yellow);
+  }
+
+  static error(err) {
+    const message = err.message || err || "Unknown error occured";
+
+    console.error(`[${this.time()}] ERROR | ${message}`.red);
+  }
 };

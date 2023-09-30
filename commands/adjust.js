@@ -1,6 +1,6 @@
 const { findBossByAlias } = require("../boss-handler/findBossByAlias");
 const { setWindowTimes } = require("../queries/bossQueries");
-const { logger } = require("../utils/logger");
+const Logger = require("../utils/logger");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
@@ -45,8 +45,7 @@ module.exports = {
               )}\``
             );
 
-            logger(
-              "LOG",
+            Logger.info(
               `${
                 boss.shortName
               } clear time adjusted to ${time.toISOString()} by ${

@@ -1,6 +1,6 @@
 const { prisma } = require("../db");
 const { config } = require("../config");
-const { logger } = require("../utils/logger");
+const Logger = require("../utils/logger");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
@@ -135,7 +135,7 @@ async function setPostMaintWindow(maintEnd) {
 
 //Get a list of all bosses
 async function getBossList() {
-  logger("LOG", "Loading boss list...");
+  Logger.log("Loading boss list...");
   const bosses = await prisma.boss.findMany();
 
   return bosses;

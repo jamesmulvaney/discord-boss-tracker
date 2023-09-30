@@ -1,4 +1,4 @@
-const { logger } = require("../utils/logger");
+const Logger = require("../utils/logger");
 const { activeBosses } = require("./activeBosses");
 const { Boss } = require("./class/Boss");
 const { findBossByAlias } = require("./findBossByAlias");
@@ -95,7 +95,7 @@ async function checkMessage(message) {
           () =>
             m
               .delete()
-              .catch((err) => logger("ERROR", `Failed to delete message.`)),
+              .catch((err) => Logger.error(`Failed to delete message.`)),
           10000
         );
       });
@@ -135,7 +135,7 @@ async function checkMessage(message) {
             () =>
               m
                 .delete()
-                .catch((err) => logger("ERROR", `Failed to delete message.`)),
+                .catch((err) => Logger.error(`Failed to delete message.`)),
             10000
           );
         });

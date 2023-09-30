@@ -1,7 +1,7 @@
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const { activeBosses } = require("../boss-handler/activeBosses");
-const { logger } = require("../utils/logger");
+const Logger = require("../utils/logger");
 dayjs.extend(utc);
 
 module.exports = {
@@ -38,8 +38,7 @@ module.exports = {
               });
             });
 
-            logger(
-              "LOG",
+            Logger.info(
               `${boss.bossInfo.shortName} chart ${
                 toggleType ? "hidden" : "unhidden"
               } by ${msg.author.tag}.`

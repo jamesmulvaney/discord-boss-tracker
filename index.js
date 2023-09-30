@@ -8,7 +8,7 @@ const {
 const { timersMessage } = require("./timers/timersMessage");
 const { config } = require("./config");
 const { getConfig } = require("./queries/getConfig");
-const { logger } = require("./utils/logger");
+const Logger = require("./utils/logger");
 
 //Load environment variables
 dotenv.config();
@@ -37,20 +37,20 @@ for (const f of commandFiles) {
 
 //Bot Loaded
 client.once(Events.ClientReady, async (c) => {
-  logger("LOG", "BDO Boss Tracker started successfully!");
-  logger("LOG", `Logged in as ${c.user.tag}`);
+  Logger.log("BDO Boss Tracker started successfully!");
+  Logger.log(`Logged in as ${c.user.tag}`);
   config.push(await getConfig());
   await scheduleNotification(client);
   await timersMessage(client);
 
-  client.channels.fetch(process.env.MOD_CHANNEL_ID).then((c) => {
-    c.send({ content: "Bot online and ready!" });
+  client.channels.fetch(process.env.MOD_CHANNEL_ID).then((channel) => {
+    channel.send({ content: "Bot online and ready!" });
   });
 });
 
 //Reconnect
 client.on(Events.ShardReconnecting, () => {
-  logger("LOG", "Reconnecting to Discord...");
+  Logger.warn("Reconnecting to Discord...");
 });
 
 //Command Listener

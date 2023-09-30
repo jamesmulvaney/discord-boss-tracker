@@ -1,6 +1,6 @@
 const { WebhookClient } = require("discord.js");
 const { timerMessageId } = require("../timers/timersMessage");
-const { logger } = require("../utils/logger");
+const Logger = require("../utils/logger");
 
 module.exports = {
   name: "restart",
@@ -22,11 +22,11 @@ module.exports = {
         await timersWebhook
           .deleteMessage(timerMessageId.shift())
           .catch((err) => {
-            logger("ERROR", `Failed to delete message.`);
-            logger("ERROR", `${err}`);
+            Logger.error(`Failed to delete message.`);
+            Logger.error(`${err}`);
           });
 
-        logger("LOG", `Bot restarted by ${msg.author.tag}.`);
+        Logger.info(`Bot restarted by ${msg.author.tag}.`);
 
         process.exit(1);
       }
