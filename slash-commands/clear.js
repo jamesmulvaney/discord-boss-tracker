@@ -74,7 +74,10 @@ module.exports = {
     }
 
     if (!cleared) {
-      await interaction.reply({ content: "That boss is not active." });
+      await interaction.reply({
+        content: "That boss is not active.",
+        ephemeral: true,
+      });
     }
   },
   async autocomplete(interaction) {
