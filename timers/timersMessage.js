@@ -2,7 +2,7 @@ const { config } = require("../config");
 const { activeBosses } = require("../boss-handler/activeBosses");
 const { parseElapsed, parseTimeUntil } = require("../boss-handler/parseUptime");
 const { getFieldBossList, getBossSchedule } = require("../queries/bossQueries");
-const { logger } = require("../utils/logger");
+const Logger = require("../utils/logger");
 const { updateIsMaintenance } = require("../queries/setConfig");
 const { WebhookClient } = require("discord.js");
 const dayjs = require("dayjs");
@@ -175,7 +175,7 @@ async function timersMessage(client) {
       timerMessageId.push(message.id);
     })
     .catch((err) => {
-      logger("ERROR", `${err}`);
+      Logger.error(`${err}`);
     });
 
   setTimeout(() => {
@@ -185,7 +185,7 @@ async function timersMessage(client) {
     //Delete previous message
     setTimeout(() => {
       timersWebhook.deleteMessage(timerMessageId.shift()).catch((err) => {
-        logger("ERROR", `Failed to delete message.`);
+        Logger.error(`Failed to delete message.`);
       });
     }, 1000);
   }, 60000);

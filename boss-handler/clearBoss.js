@@ -1,7 +1,7 @@
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 const { activeBosses } = require("./activeBosses");
-const { logger } = require("../utils/logger");
+const Logger = require("../utils/logger");
 dayjs.extend(utc);
 
 function clearBoss(msg, args) {
@@ -33,7 +33,7 @@ function clearBoss(msg, args) {
           });
         });
 
-        logger("LOG", `${bossName} cleared by ${msg.author.tag}`);
+        Logger.info(`${bossName} cleared by ${msg.author.tag}`);
 
         //Remove boss from the array
         activeBosses.splice(i, 1);

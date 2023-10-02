@@ -1,5 +1,5 @@
 const { getCalendarClient } = require("../lib/googleCalendarClient");
-const { logger } = require("../utils/logger");
+const Logger = require("../utils/logger");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
@@ -17,7 +17,7 @@ async function fetchCalendar() {
       orderBy: "startTime",
     })
     .then((res) => {
-      logger("LOG", `Fetched Google Calendar`);
+      Logger.log(`Fetched Google Calendar`);
 
       calendarRes = res.data.items;
     })

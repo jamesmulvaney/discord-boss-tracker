@@ -2,7 +2,7 @@ const { parseCalendar } = require("./parseCalendar");
 const { activeBosses } = require("../boss-handler/activeBosses");
 const { Boss } = require("../boss-handler/class/Boss");
 const { config } = require("../config");
-const { logger } = require("../utils/logger");
+const Logger = require("../utils/logger");
 const { freshWorldBossStatus } = require("../utils/freshWorldBossStatus");
 const {
   freshFieldBossStatus,
@@ -20,7 +20,7 @@ async function scheduleNotification(client) {
   const reminderTime = 5;
 
   if (schedule.length === 0) {
-    logger("ERROR", "No bosses found in calendar.");
+    Logger.log("No bosses found in calendar.");
 
     //Try again in 10mins
     const retryIn = dayjs().utc().add(10, "minutes");
@@ -55,8 +55,7 @@ async function scheduleNotification(client) {
   //Schedule a reminder in boss-notifications
   if (!dayjs().utc().isAfter(reminderAt)) {
     for (const boss of nextBoss) {
-      logger(
-        "LOG",
+      Logger.log(
         `Scheduled reminder for ${
           boss.shortName
         } at ${reminderAt.toISOString()}.`
@@ -89,7 +88,7 @@ async function scheduleNotification(client) {
               avatarURL: boss.avatar,
             });
 
-            logger("LOG", `Reminder sent for ${boss.name}.`);
+            Logger.log(`Reminder sent for ${boss.name}.`);
           },
           {
             timezone: "Etc/UTC",
