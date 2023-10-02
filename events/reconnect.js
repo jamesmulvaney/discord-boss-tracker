@@ -5,6 +5,6 @@ module.exports = {
   name: Events.ShardReconnecting,
   once: false,
   execute() {
-    Logger.log("Reconnecting to Discord...");
+    Logger.warn("Reconnecting to Discord...");
   },
 };

@@ -168,7 +168,7 @@ class Boss {
   //Set the boss' health
   setHealth(channel, health, message) {
     let type = "Alive";
-    let channelTag = "ALL";
+    let channelTag;
     let hp = health;
 
     if (this.bossInfo.isWorldBoss) {
@@ -181,7 +181,7 @@ class Boss {
       }
 
       if (this.status[0].currentHealth === "Dead") {
-        type = "Killed";
+        type = "Dead";
       } else if (this.status[0].currentHealth === "Desp") {
         type = "Despawned";
       }
@@ -232,9 +232,9 @@ class Boss {
       c.send({
         content: `\`${dayjs().utc().toISOString()}\` <#${
           process.env.STATUS_CHANNEL_ID
-        }> \`${channelTag}-${this.bossInfo.shortName}-${hp}-${type}\` <@${
-          message.author.id
-        }> \`${message.content}\``,
+        }> \`${channelTag ? `${channelTag}-` : ""}${
+          this.bossInfo.shortName
+        }-${hp}-${type}\` <@${message.author.id}> \`${message.content}\``,
       })
     );
 

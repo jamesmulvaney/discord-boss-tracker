@@ -51,7 +51,7 @@ module.exports = {
               });
             });
 
-          Logger.log(`${bossName} cleared by ${interaction.member.user.tag}`);
+          Logger.info(`${bossName} cleared by ${interaction.member.user.tag}`);
 
           //Remove boss from the array
           activeBosses.splice(i, 1);
