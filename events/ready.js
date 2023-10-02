@@ -5,14 +5,14 @@ const {
   scheduleNotification,
 } = require("../boss-schedule/scheduleNotification");
 const { timersMessage } = require("../timers/timersMessage");
-const { logger } = require("../utils/logger");
+const Logger = require("../utils/logger");
 
 module.exports = {
   name: Events.ClientReady,
   once: true,
   async execute(client) {
-    logger("LOG", "BDO Boss Tracker started successfully!");
-    logger("LOG", `Logged in as ${client.user.tag}`);
+    Logger.log("BDO Boss Tracker started successfully!");
+    Logger.log(`Logged in as ${client.user.tag}`);
 
     config.push(await getConfig());
     await scheduleNotification(client);

@@ -1,7 +1,7 @@
 const { REST, Routes } = require("discord.js");
 const { readdirSync } = require("fs");
 const { join } = require("path");
-const { logger } = require("../utils/logger");
+const Logger = require("../utils/logger");
 
 module.exports = (client) => {
   const slashCommands = [];
@@ -42,10 +42,10 @@ module.exports = (client) => {
       body: slashCommands.map((command) => command.data.toJSON()),
     })
     .then((data) => {
-      logger("LOG", `Loaded ${data.length} slash commands`);
-      logger("LOG", `Loaded ${normalCommands.length} commands`);
+      Logger.log(`Loaded ${data.length} slash commands`);
+      Logger.log(`Loaded ${normalCommands.length} commands`);
     })
     .catch((err) => {
-      logger("ERROR", `${err}`);
+      Logger.error(`${err}`);
     });
 };

@@ -1,8 +1,8 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { activeBosses } = require("../boss-handler/activeBosses");
+const Logger = require("../utils/logger");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
-const { logger } = require("../utils/logger");
 dayjs.extend(utc);
 
 module.exports = {
@@ -51,10 +51,7 @@ module.exports = {
               });
             });
 
-          logger(
-            "LOG",
-            `${bossName} cleared by ${interaction.member.user.tag}`
-          );
+          Logger.log(`${bossName} cleared by ${interaction.member.user.tag}`);
 
           //Remove boss from the array
           activeBosses.splice(i, 1);

@@ -1,13 +1,13 @@
 const { createChart } = require("../canvas");
 const { parseUptime, parseForceDespawnTime } = require("../parseUptime");
 const { activeBosses } = require("../activeBosses");
-const Logger = require("../../utils/logger");
 const {
   setWindowTimes,
   updateStatus,
   setLastSpawn,
 } = require("../../queries/bossQueries");
 const { WebhookClient } = require("discord.js");
+const Logger = require("../../utils/logger");
 const cron = require("node-cron");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");

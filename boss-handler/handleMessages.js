@@ -1,7 +1,7 @@
-const Logger = require("../utils/logger");
 const { activeBosses } = require("./activeBosses");
 const { Boss } = require("./class/Boss");
 const { findBossByAlias } = require("./findBossByAlias");
+const Logger = require("../utils/logger");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
