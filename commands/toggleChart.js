@@ -1,7 +1,8 @@
+const { activeBosses } = require("../boss-handler/activeBosses");
+const { sendModLog } = require("../utils/sendModLog");
+const Logger = require("../utils/logger");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
-const { activeBosses } = require("../boss-handler/activeBosses");
-const Logger = require("../utils/logger");
 dayjs.extend(utc);
 
 module.exports = {
@@ -28,15 +29,14 @@ module.exports = {
             });
 
             //Send log to #logs
-            msg.client.channels.fetch(process.env.LOG_CHANNEL_ID).then((c) => {
-              c.send({
-                content: `\`${dayjs().utc().toISOString()}\` <#${
-                  msg.channel.id
-                }> \`${boss.bossInfo.shortName}-${
-                  toggleType ? "Hidden" : "Unhidden"
-                }\` <@${msg.author.id}>`,
-              });
-            });
+            sendModLog(
+              msg.client,
+              msg.channel,
+              `${boss.bossInfo.shortName}-${
+                toggleType ? "Hidden" : "Unhidden"
+              }`,
+              msg.author
+            );
 
             Logger.info(
               `${boss.bossInfo.shortName} chart ${

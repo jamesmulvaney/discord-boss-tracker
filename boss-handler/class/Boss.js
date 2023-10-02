@@ -7,6 +7,7 @@ const {
   setLastSpawn,
 } = require("../../queries/bossQueries");
 const { WebhookClient } = require("discord.js");
+const { sendModLog } = require("../../utils/sendModLog");
 const Logger = require("../../utils/logger");
 const cron = require("node-cron");
 const dayjs = require("dayjs");
@@ -228,14 +229,16 @@ class Boss {
 
     if (hp === "Dead" || hp === "Desp" || hp === "DNS") hp = "0";
 
-    this.client.channels.fetch(process.env.LOG_CHANNEL_ID).then((c) =>
-      c.send({
-        content: `\`${dayjs().utc().toISOString()}\` <#${
-          process.env.STATUS_CHANNEL_ID
-        }> \`${channelTag ? `${channelTag}-` : ""}${
-          this.bossInfo.shortName
-        }-${hp}-${type}\` <@${message.author.id}> \`${message.content}\``,
-      })
+    const logMessage = `${channelTag ? `${channelTag}-` : ""}${
+      this.bossInfo.shortName
+    }-${hp}-${type}`;
+
+    sendModLog(
+      this.client,
+      message.channel,
+      logMessage,
+      message.author,
+      message.content
     );
 
     //Update the boss health in the database

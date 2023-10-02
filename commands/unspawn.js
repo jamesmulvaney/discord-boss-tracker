@@ -1,7 +1,8 @@
 const { activeBosses } = require("../boss-handler/activeBosses");
+const { sendModLog } = require("../utils/sendModLog");
+const Logger = require("../utils/logger");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
-const Logger = require("../utils/logger");
 dayjs.extend(utc);
 
 module.exports = {
@@ -41,12 +42,11 @@ module.exports = {
             });
 
             //Logs channel message
-            msg.client.channels.fetch(process.env.LOG_CHANNEL_ID).then((c) =>
-              c.send({
-                content: `\`${dayjs().utc().toISOString()}\` <#${
-                  process.env.MOD_CHANNEL_ID
-                }> \`${bossName}-Unspawned\` <@${msg.author.id}>`,
-              })
+            sendModLog(
+              msg.client,
+              msg.channel,
+              `${bossName}-Unspawned`,
+              msg.author
             );
 
             Logger.info(`${bossName} unspawned by ${msg.author.tag}.`);

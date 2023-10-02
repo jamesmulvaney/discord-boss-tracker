@@ -1,6 +1,7 @@
 const { activeBosses } = require("./activeBosses");
 const { Boss } = require("./class/Boss");
 const { findBossByAlias } = require("./findBossByAlias");
+const { sendModLog } = require("../utils/sendModLog");
 const Logger = require("../utils/logger");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
@@ -35,15 +36,13 @@ async function checkMessage(message) {
     );
 
     //Send log to #logs
-    message.client.channels.fetch(process.env.LOG_CHANNEL_ID).then((c) => {
-      c.send({
-        content: `\`${dayjs().utc().toISOString()}\` <#${
-          process.env.STATUS_CHANNEL_ID
-        }> \`${boss.shortName}-Revived\` <@${message.author.id}> \`${
-          message.content
-        }\``,
-      });
-    });
+    sendModLog(
+      message.client,
+      message.channel,
+      `${boss.shortName}-Revived`,
+      message.author,
+      message.content
+    );
 
     return;
   }

@@ -4,6 +4,7 @@ const {
   updateStatus,
 } = require("../queries/bossQueries");
 const { freshWorldBossStatus } = require("../utils/freshWorldBossStatus");
+const { sendModLog } = require("../utils/sendModLog");
 const { activeBosses } = require("./activeBosses");
 const { Boss } = require("./class/Boss");
 const { findBossByAlias } = require("./findBossByAlias");
@@ -37,15 +38,13 @@ async function callBoss(msg, args) {
         activeBoss.changeToUber(boss, msg.author);
 
         //Send log to #logs
-        msg.client.channels.fetch(process.env.LOG_CHANNEL_ID).then((c) => {
-          c.send({
-            content: `\`${dayjs().utc().toISOString()}\` <#${
-              process.env.STATUS_CHANNEL_ID
-            }> \`${boss.shortName}-Spawned\` <@${msg.author.id}> \`${
-              msg.content
-            }\``,
-          });
-        });
+        sendModLog(
+          msg.client,
+          msg.channel,
+          `${boss.shortName}-Spawned`,
+          msg.author,
+          msg.content
+        );
 
         return;
       }
@@ -85,13 +84,13 @@ async function callBoss(msg, args) {
   }
 
   //Send log to #logs
-  msg.client.channels.fetch(process.env.LOG_CHANNEL_ID).then((c) => {
-    c.send({
-      content: `\`${dayjs().utc().toISOString()}\` <#${
-        process.env.STATUS_CHANNEL_ID
-      }> \`${boss.shortName}-Spawned\` <@${msg.author.id}> \`${msg.content}\``,
-    });
-  });
+  sendModLog(
+    msg.client,
+    msg.channel,
+    `${boss.shortName}-Spawned`,
+    msg.author,
+    msg.content
+  );
 }
 
 module.exports = {

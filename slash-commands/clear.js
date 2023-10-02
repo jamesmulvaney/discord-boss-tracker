@@ -1,5 +1,6 @@
 const { SlashCommandBuilder } = require("discord.js");
 const { activeBosses } = require("../boss-handler/activeBosses");
+const { sendModLog } = require("../utils/sendModLog");
 const Logger = require("../utils/logger");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
@@ -41,15 +42,12 @@ module.exports = {
           if (!activeBosses[i].isHidden) activeBosses[i].deleteLastMessage();
 
           //Send log to #logs
-          interaction.client.channels
-            .fetch(process.env.LOG_CHANNEL_ID)
-            .then((c) => {
-              c.send({
-                content: `\`${dayjs().utc().toISOString()}\` <#${
-                  interaction.channel.id
-                }> \`${bossName}-Cleared\` <@${interaction.member.user.id}>`,
-              });
-            });
+          sendModLog(
+            interaction.client,
+            interaction.channel,
+            `${bossName}-Cleared`,
+            interaction.user
+          );
 
           Logger.info(`${bossName} cleared by ${interaction.member.user.tag}`);
 

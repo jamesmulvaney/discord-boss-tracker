@@ -1,4 +1,5 @@
 const { activeBosses } = require("./activeBosses");
+const { sendModLog } = require("../utils/sendModLog");
 const Logger = require("../utils/logger");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
@@ -25,13 +26,7 @@ function clearBoss(msg, args) {
         if (!activeBosses[i].isHidden) activeBosses[i].deleteLastMessage();
 
         //Send log to #logs
-        msg.client.channels.fetch(process.env.LOG_CHANNEL_ID).then((c) => {
-          c.send({
-            content: `\`${dayjs().utc().toISOString()}\` <#${
-              msg.channel.id
-            }> \`${bossName}-Cleared\` <@${msg.author.id}>`,
-          });
-        });
+        sendModLog(msg.client, msg.channel, `${bossName}-Cleared`, msg.author);
 
         Logger.info(`${bossName} cleared by ${msg.author.tag}`);
 
