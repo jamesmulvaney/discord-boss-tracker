@@ -1,5 +1,5 @@
 const { Events } = require("discord.js");
-const { logger } = require("../utils/logger");
+const Logger = require("../utils/logger");
 const { checkMessage } = require("../boss-handler/handleMessages");
 
 module.exports = {
@@ -21,7 +21,7 @@ module.exports = {
       try {
         command.execute(message, args);
       } catch (err) {
-        logger("ERROR", `${err}`);
+        Logger.error(err);
 
         message.reply({
           content: `There was an error running that command.`,

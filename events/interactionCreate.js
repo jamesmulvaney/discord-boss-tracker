@@ -1,5 +1,5 @@
 const { Events } = require("discord.js");
-const { logger } = require("../utils/logger");
+const Logger = require("../utils/logger");
 
 module.exports = {
   name: Events.InteractionCreate,
@@ -10,7 +10,7 @@ module.exports = {
     );
 
     if (!command) {
-      logger("ERROR", `Command ${interaction.commandName} not found`);
+      Logger.error(`Command ${interaction.commandName} not found`);
       return;
     }
 
@@ -18,7 +18,7 @@ module.exports = {
       try {
         await command.execute(interaction);
       } catch (err) {
-        logger("ERROR", `${err}`);
+        Logger.error(err);
 
         await interaction.reply({
           content: "There was an error running that command.",
@@ -30,7 +30,7 @@ module.exports = {
         if (!command.autocomplete) return;
         await command.autocomplete(interaction);
       } catch (err) {
-        logger("ERROR", `${err}`);
+        Logger.error(err);
       }
     }
   },

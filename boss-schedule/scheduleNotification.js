@@ -2,13 +2,13 @@ const { parseCalendar } = require("./parseCalendar");
 const { activeBosses } = require("../boss-handler/activeBosses");
 const { Boss } = require("../boss-handler/class/Boss");
 const { config } = require("../config");
-const Logger = require("../utils/logger");
 const { freshWorldBossStatus } = require("../utils/freshWorldBossStatus");
 const {
   freshFieldBossStatus,
   updateStatus,
 } = require("../queries/bossQueries");
 const { WebhookClient } = require("discord.js");
+const Logger = require("../utils/logger");
 const cron = require("node-cron");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");

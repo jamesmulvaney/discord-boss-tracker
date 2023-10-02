@@ -1,7 +1,7 @@
-const dayjs = require("dayjs");
-const utc = require("dayjs/plugin/utc");
 const { activeBosses } = require("./activeBosses");
 const Logger = require("../utils/logger");
+const dayjs = require("dayjs");
+const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 
 function clearBoss(msg, args) {

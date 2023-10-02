@@ -23,7 +23,7 @@ module.exports = {
           .deleteMessage(timerMessageId.shift())
           .catch((err) => {
             Logger.error(`Failed to delete message.`);
-            Logger.error(`${err}`);
+            Logger.error(err);
           });
 
         Logger.info(`Bot restarted by ${msg.author.tag}.`);

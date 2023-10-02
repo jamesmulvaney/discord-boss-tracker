@@ -1,6 +1,6 @@
 const { readdirSync } = require("fs");
 const { join } = require("path");
-const { logger } = require("../utils/logger");
+const Logger = require("../utils/logger");
 
 module.exports = (client) => {
   const eventsPath = join(__dirname, "../events");
@@ -16,5 +16,5 @@ module.exports = (client) => {
       : client.on(event.name, (...args) => event.execute(...args));
   }
 
-  logger("LOG", `Loaded ${eventFiles.length} events`);
+  Logger.log(`Loaded ${eventFiles.length} events`);
 };
