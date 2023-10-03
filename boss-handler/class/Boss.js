@@ -491,6 +491,7 @@ class Boss {
 
   //Change to uber
   changeToUber(uberInfo, calledBy) {
+    this.bossInfo.id = uberInfo.id;
     this.bossInfo.name = uberInfo.name;
     this.bossInfo.shortName = uberInfo.shortName;
     this.bossInfo.aliases += `|${uberInfo.aliases}`;
@@ -501,6 +502,7 @@ class Boss {
 
     this.statusHandler();
     this.sendNotif();
+    setLastSpawn(uberInfo.id, this.startTime.format());
 
     //Cancel self-refresh and delete previous message
     setTimeout(() => {

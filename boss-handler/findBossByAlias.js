@@ -1,8 +1,8 @@
-const { staticBossList } = require("../queries/bossQueries");
+const { getBossList } = require("../queries/bossQueries");
 const { activeBosses } = require("./activeBosses");
 
 async function findBossByAlias(alias) {
-  const bossList = await staticBossList;
+  const bossList = await getBossList();
 
   for (const boss of bossList) {
     const bossRegex = RegExp(`${boss.aliases}`);
@@ -11,7 +11,10 @@ async function findBossByAlias(alias) {
       let isActive = false;
 
       for (const activeBoss of activeBosses) {
-        if (activeBoss.bossInfo.id === boss.id) {
+        if (
+          activeBoss.bossInfo.id === boss.id ||
+          (!boss.uberOf && activeBoss.bossInfo.id === boss.uberOf)
+        ) {
           isActive = true;
           break;
         }

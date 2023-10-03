@@ -56,7 +56,6 @@ async function callBoss(msg, args) {
       new Boss(
         {
           ...boss,
-          id: original.id,
           aliases: `${original.aliases}|${boss.aliases}`,
         },
         dayjs().utc().format(),

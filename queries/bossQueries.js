@@ -135,7 +135,6 @@ async function setPostMaintWindow(maintEnd) {
 
 //Get a list of all bosses
 async function getBossList() {
-  Logger.log("Loading boss list...");
   const bosses = await prisma.boss.findMany();
 
   return bosses;
@@ -209,5 +208,5 @@ module.exports = {
   updateStatus,
   setNextSpawn,
   setLastSpawn,
-  staticBossList: getBossList(),
+  getBossList,
 };
