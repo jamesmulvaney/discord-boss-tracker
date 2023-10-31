@@ -62,7 +62,8 @@ async function timersMessage(client) {
   for (const boss of schedule) {
     if (
       ((!boss.isWorldBoss || boss.isUber) && !boss.nextSpawn) ||
-      activeList.includes(boss.shortName)
+      activeList.includes(boss.shortName) ||
+      (!boss.nextSpawn && !boss.alwaysShow)
     )
       continue;
 

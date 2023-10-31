@@ -48,4 +48,5 @@ model Boss {
   isUber           Boolean   @default(false)
   uberOf           Int?
   roleId           String? //ID of the role that should be pinged on spawn.
+  alwaysShow       Boolean   @default(true)
 }
