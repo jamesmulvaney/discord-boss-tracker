@@ -198,6 +198,15 @@ async function setLastSpawn(id, time) {
   return boss;
 }
 
+//Clear spawn times
+async function clearSpawnTime() {
+  await prisma.boss.updateMany({
+    data: {
+      nextSpawn: null,
+    },
+  });
+}
+
 module.exports = {
   getUberPartner,
   getFieldBossList,
@@ -208,5 +217,6 @@ module.exports = {
   updateStatus,
   setNextSpawn,
   setLastSpawn,
+  clearSpawnTime,
   getBossList,
 };

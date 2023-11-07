@@ -1,5 +1,5 @@
 const { fetchCalendar } = require("./getCalendar");
-const { setNextSpawn } = require("../queries/bossQueries");
+const { setNextSpawn, clearSpawnTime } = require("../queries/bossQueries");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
@@ -8,6 +8,9 @@ async function parseCalendar() {
   const calendar = await fetchCalendar();
   const completed = [];
   const schedule = [];
+
+  //Clear next spawn times incase a boss doesn't have a next spawn
+  await clearSpawnTime();
 
   for (const entry of calendar) {
     if (!completed.includes(entry.summary)) {
