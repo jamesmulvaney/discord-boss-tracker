@@ -1,5 +1,6 @@
 const { WebhookClient } = require("discord.js");
 const { timerMessageId } = require("../timers/timersMessage");
+const { sendModLog } = require("../utils/sendModLog");
 const Logger = require("../utils/logger");
 
 module.exports = {
@@ -12,6 +13,8 @@ module.exports = {
         await msg.reply({
           content: "Restarting bot, please wait a few seconds...",
         });
+
+        sendModLog(msg.client, msg.channel, "Restart Bot", msg.author);
 
         //Delete last timers message
         const timersWebhook = new WebhookClient({

@@ -6,6 +6,9 @@ const {
 } = require("../boss-schedule/scheduleNotification");
 const { timersMessage } = require("../timers/timersMessage");
 const Logger = require("../utils/logger");
+const dayjs = require("dayjs");
+const utc = require("dayjs/plugin/utc");
+dayjs.extend(utc);
 
 module.exports = {
   name: Events.ClientReady,
@@ -18,8 +21,12 @@ module.exports = {
     await scheduleNotification(client);
     await timersMessage(client);
 
-    client.channels.fetch(process.env.MOD_CHANNEL_ID).then((channel) => {
-      channel.send({ content: "Bot online and ready!" });
+    client.channels.fetch(process.env.LOG_CHANNEL_ID).then((channel) => {
+      channel.send({
+        content: `\`${dayjs()
+          .utc()
+          .toISOString()}\` **Boss Tracker started and ready.**`,
+      });
     });
   },
 };
