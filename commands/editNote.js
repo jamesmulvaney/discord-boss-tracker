@@ -6,7 +6,7 @@ const Logger = require("../utils/logger");
 module.exports = {
   name: "editnote",
   description:
-    "Edit a boss's note that is sent along side the status chart. Syntax: `!editnote <alias> <...note>`",
+    "Edit a boss's note that is sent along side the status chart. Syntax: `!editnote <alias> [...note]`",
   guildOnly: true,
   async execute(msg) {
     if (msg.channelId === process.env.MOD_CHANNEL_ID) {
@@ -15,7 +15,7 @@ module.exports = {
 
         if (args.length < 1) {
           await msg.reply({
-            content: `Expected 1 argument, got ${args.length}. Syntax: \`!editnote <alias> <...note>\``,
+            content: `Expected 1 argument, got ${args.length}. Syntax: \`!editnote <alias> [...note]\``,
           });
           return;
         }
@@ -40,7 +40,7 @@ module.exports = {
           sendModLog(
             msg.client,
             msg.channel,
-            `Edit Note ${boss.shortName}`,
+            `${boss.shortName}-Note-Edit`,
             msg.author
           );
           return;

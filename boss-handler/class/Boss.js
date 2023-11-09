@@ -168,7 +168,7 @@ class Boss {
 
   //Set the boss' health
   setHealth(channel, health, message) {
-    let type = "Alive";
+    let type;
     let channelTag;
     let hp = health;
 
@@ -185,6 +185,8 @@ class Boss {
         type = "Dead";
       } else if (this.status[0].currentHealth === "Desp") {
         type = "Despawned";
+      } else if (this.status[0].currentHealth === "??") {
+        type = "Unknown";
       }
 
       this.status[0].updated = dayjs().utc().format();
@@ -231,7 +233,7 @@ class Boss {
 
     const logMessage = `${channelTag ? `${channelTag}-` : ""}${
       this.bossInfo.shortName
-    }-${hp}-${type}`;
+    }-${type ? type : hp}`;
 
     sendModLog(
       this.client,
@@ -266,9 +268,14 @@ class Boss {
         type: "DidNotSpawn",
         clear: true,
       };
+    } else if (currentHealth === "??" || previousHealth === "??") {
+      return {
+        type: "Unknown",
+        clear: false,
+      };
     } else {
       return {
-        type: "Alive",
+        type: undefined,
         clear: false,
       };
     }
