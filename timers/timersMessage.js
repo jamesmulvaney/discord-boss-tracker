@@ -128,7 +128,7 @@ async function timersMessage(client) {
 
   const activeEmbed = {
     color: 0x41a54a,
-    title: ":crossed_swords: Active Bosses",
+    title: ":crossed_swords: Spawned",
     description: `\`\`\`js\n${activeList}\`\`\``,
   };
 
@@ -140,19 +140,19 @@ async function timersMessage(client) {
 
   const notInWindowEmbed = {
     color: 0x9c0000,
-    title: ":hourglass_flowing_sand: Not In Window",
+    title: ":no_entry_sign: Window Closed",
     description: `\`\`\`js\n${notInWindowList}\`\`\``,
     footer: {
-      text: "Do not have a chance to spawn until window opens",
+      text: "Can not spawn until window opens",
     },
   };
 
   const inWindowEmbed = {
     color: 0xfff269,
-    title: ":alarm_clock: In Window",
+    title: ":window: In Window",
     description: `\`\`\`js\n${inWindowList}\`\`\``,
     footer: {
-      text: "Will spawn between now and the end of window",
+      text: "Will spawn between now and the end of the window",
     },
   };
 
