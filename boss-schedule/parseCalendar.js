@@ -14,7 +14,7 @@ async function parseCalendar() {
 
   for (const entry of calendar) {
     if (!completed.includes(entry.summary)) {
-      const startTime = dayjs(entry.start.dateTime).utc().format();
+      const startTime = dayjs(entry.start.dateTime).format();
       const updatedBoss = await setNextSpawn(entry.summary, startTime);
 
       schedule.push(updatedBoss);

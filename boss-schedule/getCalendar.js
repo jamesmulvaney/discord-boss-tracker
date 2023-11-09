@@ -11,8 +11,8 @@ async function fetchCalendar() {
   await calClient.events
     .list({
       calendarId: process.env.GOOGLE_CALENDAR_ID,
-      timeMin: dayjs().utcOffset("-08:00").toISOString(),
-      timeMax: dayjs().utcOffset("-08:00").add(7, "days").toISOString(),
+      timeMin: dayjs().utc().toISOString(),
+      timeMax: dayjs().utc().add(7, "days").toISOString(),
       singleEvents: true,
       orderBy: "startTime",
     })
