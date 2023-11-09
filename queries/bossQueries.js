@@ -207,6 +207,18 @@ async function clearSpawnTime() {
   });
 }
 
+//Set a boss's note
+async function setBossNote(id, note) {
+  await prisma.boss.update({
+    where: {
+      id,
+    },
+    data: {
+      info: note,
+    },
+  });
+}
+
 module.exports = {
   getUberPartner,
   getFieldBossList,
@@ -218,5 +230,6 @@ module.exports = {
   setNextSpawn,
   setLastSpawn,
   clearSpawnTime,
+  setBossNote,
   getBossList,
 };
