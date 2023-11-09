@@ -19,25 +19,25 @@ Learn more about this project [here!](https://www.jamesmulvaney.co.uk/projects/d
 * Discord Developer Application. A guide for setting one up can be found [here](https://discordjs.guide/preparations/setting-up-a-bot-application.html#creating-your-bot)
 * PostgreSQL database
 * Google Calendar Service Account JSON file. [Follow this guide](https://developers.google.com/calendar/api/quickstart/nodejs#authorize_credentials_for_a_desktop_application) until you get your JSON credentials file.
-    - The calendar should reflect the world boss schedule found [here](https://www.naeu.playblackdesert.com/en-US/Wiki?wikiNo=83).
-    - Event summary should be the boss's short name. Example: Offin Tett's short name would be `Offin`
-* Pm2 for the restart feature
+    - The calendar should reflect the world boss schedule found [here](https://www.naeu.playblackdesert.com/en-US/Wiki?wikiNo=83) and ideally be in UTC time.
+    - Event summary should match the boss's short name in the database. Example: Black Shadow's summary would be `Shadow`.
+* Pm2 in order for the `!restart` command to work.
 
 ## Setup
 
-1. Download/clone the repository
-2. Run `npm ci` to install dependencies
-3. Move your Google Calendar API JSON file into the bot directory
-4. Make a `.env` file in the project root directory and follow the example in `.env.example`
-5. Run `npx prisma db push` to sync the database
-6. Run `npx prisma db seed` to seed the database with the default bosses
+1. Download/clone the repository.
+2. Run `npm ci` to install dependencies.
+3. Move your Google Calendar API JSON file into the bot directory.
+4. Make a `.env` file in the project root directory and follow the example in `.env.example`.
+5. Run `npx prisma db push` to sync the database.
+6. Run `npx prisma db seed` to seed the database with the default bosses and channels.
 7. Run `pm2 start index.js` or `npm start` to launch the bot!
 
 # Questions
 
 ### What are the default bosses?
 
-These are the bosses that are set up in the bot when `npx prisma db seed` is ran.
+These are the bosses that are set up in the database when `npx prisma db seed` is ran.
 
 | name | shortName | isWorldBoss |
 | ---- | --------- | ----------- |
@@ -49,7 +49,7 @@ These are the bosses that are set up in the bot when `npx prisma db seed` is ran
 | Vell | Vell | true |
 | Quint | Quint | true |
 | Muraka | Muraka | true |
-| Offin Tett | Offin | true |
+| Offin | Offin | true |
 | Dastard Bheg | Bheg | false |
 | Red Nose | RedNose | false |
 | Dim Tree | Tree | false |
