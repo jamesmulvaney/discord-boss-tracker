@@ -415,8 +415,8 @@ async function main() {
       isWorldBoss: false,
       status: [{}],
       windowCooldown: 580,
-      forceDespawnTime: 35,
-      forceClearTime: 36,
+      forceDespawnTime: 45,
+      forceClearTime: 46,
     },
   });
 
