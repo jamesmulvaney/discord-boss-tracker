@@ -14,7 +14,7 @@ module.exports = {
           content: "Restarting bot, please wait a few seconds...",
         });
 
-        sendModLog(msg.client, msg.channel, "Restart Bot", msg.author);
+        await sendModLog(msg.client, msg.channel, "Restart Bot", msg.author);
 
         Logger.info(`Bot restarted by ${msg.author.tag}.`);
 
