@@ -192,6 +192,7 @@ class Boss {
       this.status[0].updated = dayjs().utc().format();
 
       if (health === "Desp" || health === "Dead") {
+        this.isActive = false;
         this.clearBoss("auto");
         if (!this.isRevived) this.forceClearTask.stop();
       }
@@ -492,8 +493,6 @@ class Boss {
         );
       }
     }
-
-    this.isActive = false;
   }
 
   //Change to uber

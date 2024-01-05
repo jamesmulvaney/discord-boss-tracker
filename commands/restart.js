@@ -16,19 +16,6 @@ module.exports = {
 
         sendModLog(msg.client, msg.channel, "Restart Bot", msg.author);
 
-        //Delete last timers message
-        const timersWebhook = new WebhookClient({
-          id: process.env.TIMER_HOOK_ID,
-          token: process.env.TIMER_HOOK_TOKEN,
-        });
-
-        await timersWebhook
-          .deleteMessage(timerMessageId.shift())
-          .catch((err) => {
-            Logger.error(`Failed to delete message.`);
-            Logger.error(err);
-          });
-
         Logger.info(`Bot restarted by ${msg.author.tag}.`);
 
         process.exit(1);

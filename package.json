@@ -18,12 +18,14 @@
     "@colors/colors": "^1.6.0",
     "@googleapis/calendar": "^9.3.1",
     "@prisma/client": "^4.10.1",
+    "bufferutil": "^4.0.8",
     "canvas": "^2.11.0",
     "cross-env": "^7.0.3",
     "dayjs": "^1.11.7",
     "discord.js": "^14.7.1",
     "dotenv": "^16.0.3",
     "node-cron": "^3.0.2",
-    "prisma": "^4.10.1"
+    "prisma": "^4.10.1",
+    "utf-8-validate": "^6.0.3"
   }
 }

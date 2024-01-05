@@ -14,6 +14,8 @@ dayjs.extend(duration);
 const timerMessageId = [];
 
 async function timersMessage(client) {
+  if (timerMessageId.length < 1) await deleteMessageOnStart(client);
+
   const schedule = await getBossSchedule();
   const config = await getMaintenanceInfo();
   const fieldBosses = await getFieldBossList();
@@ -221,6 +223,20 @@ function nameWithPadding(name, timeLength) {
   }
 
   return name;
+}
+
+async function deleteMessageOnStart(client) {
+  const channel = client.channels.cache.get("871725043409911859");
+
+  await channel.messages.fetch({ limit: 5 }).then((messages) => {
+    messages.forEach((message) => {
+      if (message.webhookId) {
+        Logger.debug(`Deleted timers embed via fetch`);
+        message.delete();
+        return;
+      }
+    });
+  });
 }
 
 module.exports = { timersMessage, timerMessageId };
