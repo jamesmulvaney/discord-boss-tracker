@@ -6,9 +6,8 @@ const utc = require("dayjs/plugin/utc");
 dayjs.extend(utc);
 
 module.exports = {
-  name: "togglechart",
-  description:
-    "Hide or unhide a boss chart. Syntax: `!togglechart <bossAlias>`",
+  name: "toggle",
+  description: "Hide or unhide a boss chart. Syntax: `!toggle <bossAlias>`",
   guildOnly: true,
   execute(msg, args) {
     if (msg.channelId === process.env.MOD_CHANNEL_ID) {
