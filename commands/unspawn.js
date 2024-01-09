@@ -22,7 +22,8 @@ module.exports = {
           );
 
           if (bossRegex.test(alias)) {
-            bossName = activeBosses[i].bossInfo.shortName;
+            const bossName = activeBosses[i].bossInfo.name;
+            const bossShortName = activeBosses[i].bossInfo.shortName;
             activeBosses[i].isActive = false;
             activeBosses[i].deleteLastMessage();
 
@@ -41,18 +42,18 @@ module.exports = {
 
             //Message to mod
             msg.reply({
-              content: `${bossName} has been unspawned.`,
+              content: `${bossShortName} has been unspawned.`,
             });
 
             //Logs channel message
             sendModLog(
               msg.client,
               msg.channel,
-              `${bossName}-Unspawned`,
+              `${bossShortName}-Unspawned`,
               msg.author
             );
 
-            Logger.info(`${bossName} unspawned by ${msg.author.tag}.`);
+            Logger.info(`${bossShortName} unspawned by ${msg.author.tag}.`);
 
             //Remove boss from active boss list
             activeBosses.splice(i, 1);
