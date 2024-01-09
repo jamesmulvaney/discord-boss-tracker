@@ -48,9 +48,8 @@ async function checkMessage(message) {
   }
 
   //Ignore calls containing these phrases
-  const ignoreRegexp = new RegExp(
-    /\?|:|!|#|not|who|whoever|which|said|was|lied|someone|some|false|called|call|update|updates|isn'?t|root|leg|shield|stronger|shld|>|\p{Extended_Pictographic}/iu
-  );
+  const ignoreRegexp =
+    /\?|:|!|#|not|who|whoever|which|said|was|lied|someone|some|false|called|call|update|updates|isn'?t|root|leg|shield|stronger|shld|>|\p{Extended_Pictographic}/iu;
   if (ignoreRegexp.test(message.content) || activeBosses.length === 0) return;
 
   let fullMessage = message.content;
@@ -58,7 +57,7 @@ async function checkMessage(message) {
   //Check for boss alias
   let matchedBoss;
   for (const boss of activeBosses) {
-    const aliasRegexp = new RegExp(`${boss.bossInfo.aliases}`);
+    const aliasRegexp = new RegExp(`${boss.bossInfo.aliases}`, "iu");
 
     if (aliasRegexp.test(fullMessage)) {
       matchedBoss = boss;
@@ -105,7 +104,7 @@ async function checkMessage(message) {
   let matchedChannel;
   if (!matchedBoss.bossInfo.isWorldBoss) {
     for (const status of matchedBoss.status) {
-      const channelRegexp = new RegExp(`${status.channel.aliases}`);
+      const channelRegexp = new RegExp(`${status.channel.aliases}`, "iu");
       if (channelRegexp.test(fullMessage)) {
         if (!status.channel.isArsha) {
           matchedChannel = status.channel.name;
@@ -144,13 +143,11 @@ async function checkMessage(message) {
 
   //Check for health
   let matchedHealth;
-  const aliveRegexp = new RegExp(/\b(100|[1-9]?[0-9])(?:$|%|hp)/iu);
-  const deadRegexp = new RegExp(
-    /d(?:d|ed|ead)?$|died|rip|killed|down|clear|cleared/iu
-  );
-  const despRegexp = new RegExp(/desp?a?w?n?e?d?/);
-  const undoRegexp = new RegExp(/undo|revert/);
-  const dnsRegexp = new RegExp(/dns/);
+  const aliveRegexp = /\b(100|[1-9]?[0-9])(?:$|%)/iu;
+  const deadRegexp = /d(?:d|ed|ead)?$|died|rip|killed|down|clear|cleared/iu;
+  const despRegexp = /desp?a?w?n?e?d?/;
+  const undoRegexp = /undo|revert/;
+  const dnsRegexp = /dns/;
 
   if (aliveRegexp.test(fullMessage)) {
     matchedHealth = aliveRegexp.exec(message);

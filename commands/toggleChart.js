@@ -17,7 +17,7 @@ module.exports = {
         let toggled = false;
 
         for (boss of activeBosses) {
-          const bossRegex = RegExp(`${boss.bossInfo.aliases}`);
+          const bossRegex = new RegExp(`${boss.bossInfo.aliases}`, "iu");
 
           if (bossRegex.test(alias)) {
             //Toggle Chart

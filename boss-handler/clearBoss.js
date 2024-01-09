@@ -10,7 +10,7 @@ function clearBoss(msg, args) {
 
   //Loop through the current active bosses to find the user specified boss.
   for (let i = 0; i < activeBosses.length; i++) {
-    const bossRegex = RegExp(`${activeBosses[i].bossInfo.aliases}`);
+    const bossRegex = new RegExp(`${activeBosses[i].bossInfo.aliases}`, "iu");
 
     if (bossRegex.test(alias)) {
       //Clear the boss if it is a field boss.

@@ -5,7 +5,7 @@ async function findBossByAlias(alias) {
   const bossList = await getBossList();
 
   for (const boss of bossList) {
-    const bossRegex = RegExp(`${boss.aliases}`);
+    const bossRegex = new RegExp(`${boss.aliases}`, "iu");
 
     if (bossRegex.test(alias)) {
       let isActive = false;

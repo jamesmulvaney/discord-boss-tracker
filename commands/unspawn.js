@@ -16,7 +16,10 @@ module.exports = {
         let unspawned = false;
 
         for (let i = 0; i < activeBosses.length; i++) {
-          const bossRegex = RegExp(`${activeBosses[i].bossInfo.aliases}`);
+          const bossRegex = new RegExp(
+            `${activeBosses[i].bossInfo.aliases}`,
+            "iu"
+          );
 
           if (bossRegex.test(alias)) {
             bossName = activeBosses[i].bossInfo.shortName;
