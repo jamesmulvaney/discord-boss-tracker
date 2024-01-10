@@ -360,7 +360,7 @@ class Boss {
 
       embed = {
         color: 0x8a0000,
-        title: `${this.bossInfo.name} all clear after ${clearTime}`,
+        title: `${this.bossInfo.name} cleared after ${clearTime}`,
         fields: embedFields,
         thumbnail: {
           url: `${this.bossInfo.avatar}`,
@@ -375,7 +375,7 @@ class Boss {
     } else {
       embed = {
         color: 0x8a0000,
-        title: `${this.bossInfo.shortName} all clear after ${parseUptime(
+        title: `${this.bossInfo.shortName} cleared after ${parseUptime(
           this.startTime,
           true
         )}`,
@@ -425,11 +425,11 @@ class Boss {
       color: 0x8a0000,
       title:
         type === "force"
-          ? `${this.bossInfo.name} all clear after ${parseForceDespawnTime(
+          ? `${this.bossInfo.name} cleared after ${parseForceDespawnTime(
               this.startTime,
               this.bossInfo.forceDespawnTime
             )}`
-          : `${this.bossInfo.name} all clear after ${parseUptime(
+          : `${this.bossInfo.name} cleared after ${parseUptime(
               this.startTime,
               true
             )}`,
