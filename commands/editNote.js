@@ -41,7 +41,8 @@ module.exports = {
             msg.client,
             msg.channel,
             `${boss.shortName}-Note-Edit`,
-            msg.author
+            msg.author,
+            `\`${note}\``
           );
           return;
         } catch (err) {
