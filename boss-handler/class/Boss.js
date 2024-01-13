@@ -303,8 +303,51 @@ class Boss {
 
   //Get an embed with the clear information for the field boss. (Number killed, despawned, etc.)
   fieldClearEmbed(type) {
-    let embed;
     const embedFields = [];
+    let embed = {
+      author: {
+        name: this.bossInfo.name,
+        icon_url: this.bossInfo.avatar,
+      },
+      color: 0x8a0000,
+      title: `Boss Clear Summary`,
+      fields: embedFields,
+    };
+
+    if (type !== "auto") {
+      const currTime = dayjs().utc();
+      const forceTime = this.startTime.add(
+        this.bossInfo.forceDespawnTime,
+        "minutes"
+      );
+      let clearTime = "";
+
+      if (!currTime.isBefore(forceTime)) {
+        clearTime = `${parseForceDespawnTime(
+          this.startTime,
+          this.bossInfo.forceDespawnTime
+        )} [Forced Despawn]`;
+      } else {
+        clearTime = `${parseUptime(this.startTime, true)}`;
+      }
+
+      embedFields.push({
+        name: "Time Elapsed",
+        value: clearTime,
+      });
+
+      embed.footer = {
+        text:
+          type === "force"
+            ? "This boss reached it's auto-clear time. @mention a mod if it is still alive."
+            : "This boss was cleared by a moderator. @mention a mod if it is still alive.",
+      };
+    } else {
+      embedFields.push({
+        name: "Time Elapsed",
+        value: parseUptime(this.startTime, true),
+      });
+    }
 
     //Embed Fields
     const [killed, despawned, didNotSpawn, uncalled] = this.formatFieldStatus();
@@ -339,51 +382,6 @@ class Boss {
         value: `${uncalled}`,
         inline: true,
       });
-    }
-
-    if (type === "force" || type === "manual") {
-      const currTime = dayjs().utc();
-      const forceTime = this.startTime.add(
-        this.bossInfo.forceDespawnTime,
-        "minutes"
-      );
-      let clearTime = "";
-
-      if (!currTime.isBefore(forceTime)) {
-        clearTime = `${parseForceDespawnTime(
-          this.startTime,
-          this.bossInfo.forceDespawnTime
-        )}, adjusted to force despawn`;
-      } else {
-        clearTime = `${parseUptime(this.startTime, true)}`;
-      }
-
-      embed = {
-        color: 0x8a0000,
-        title: `${this.bossInfo.name} cleared after ${clearTime}`,
-        fields: embedFields,
-        thumbnail: {
-          url: `${this.bossInfo.avatar}`,
-        },
-        footer: {
-          text:
-            type === "force"
-              ? "This boss reached it's auto-clear time. @mention a mod if it is still alive."
-              : "This boss was cleared by a moderator. @mention a mod if it is still alive.",
-        },
-      };
-    } else {
-      embed = {
-        color: 0x8a0000,
-        title: `${this.bossInfo.shortName} cleared after ${parseUptime(
-          this.startTime,
-          true
-        )}`,
-        fields: embedFields,
-        thumbnail: {
-          url: `${this.bossInfo.avatar}`,
-        },
-      };
     }
 
     return embed;
@@ -422,21 +420,13 @@ class Boss {
   async clearBoss(type) {
     const embedField = [];
     let embed = {
-      color: 0x8a0000,
-      title:
-        type === "force"
-          ? `${this.bossInfo.name} cleared after ${parseForceDespawnTime(
-              this.startTime,
-              this.bossInfo.forceDespawnTime
-            )}`
-          : `${this.bossInfo.name} cleared after ${parseUptime(
-              this.startTime,
-              true
-            )}`,
-      fields: embedField,
-      thumbnail: {
-        url: `${this.bossInfo.avatar}`,
+      author: {
+        name: this.bossInfo.name,
+        icon_url: this.bossInfo.avatar,
       },
+      color: 0x8a0000,
+      title: "Boss Clear Summary",
+      fields: embedField,
       footer:
         type === "force"
           ? {
@@ -444,6 +434,17 @@ class Boss {
             }
           : undefined,
     };
+
+    embedField.push({
+      name: "**Time Elapsed**",
+      value:
+        type === "force"
+          ? parseForceDespawnTime(
+              this.startTime,
+              this.bossInfo.forceDespawnTime
+            )
+          : parseUptime(this.startTime, true),
+    });
 
     if (this.bossInfo.isWorldBoss) {
       //Killed or desp
