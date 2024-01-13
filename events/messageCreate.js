@@ -18,6 +18,20 @@ module.exports = {
 
       if (!command) return;
 
+      //Check if user has permission
+      if (command.role) {
+        let hasPermission = false;
+
+        command.role.forEach((roleId) => {
+          if (message.member?.roles.cache.has(roleId)) {
+            hasPermission = true;
+            return;
+          }
+        });
+
+        if (!hasPermission) return;
+      }
+
       try {
         command.execute(message, args);
       } catch (err) {

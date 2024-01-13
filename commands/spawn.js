@@ -4,14 +4,10 @@ module.exports = {
   name: "spawn",
   description: "Used to call a boss up. Syntax: `!spawn <bossAlias>`",
   guildOnly: true,
+  role: [process.env.HELPFUL_ROLE_ID, process.env.MOD_ROLE_ID],
   execute(msg, args) {
     if (msg.channelId === process.env.STATUS_CHANNEL_ID) {
-      if (
-        msg.member?.roles.cache.has(process.env.HELPFUL_ROLE_ID) ||
-        msg.member?.roles.cache.has(process.env.MOD_ROLE_ID)
-      ) {
-        callBoss(msg, args);
-      }
+      callBoss(msg, args);
     }
   },
 };

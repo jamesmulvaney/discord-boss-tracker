@@ -10,36 +10,35 @@ module.exports = {
   description:
     "Adjust a maintenance's end time. Syntax: `!adjustmaint <endTime>`",
   guildOnly: true,
+  role: [process.env.MOD_ROLE_ID],
   async execute(msg, args) {
     if (msg.channelId === process.env.MOD_CHANNEL_ID) {
-      if (msg.member?.roles.cache.has(process.env.MOD_ROLE_ID)) {
-        if (args.length === 1) {
-          //Validation
-          if (!dayjs(args[0]).isValid()) {
-            msg.reply(
-              `Invalid time string provided. Current time string: \`${dayjs()
-                .utc()
-                .toISOString()}\``
-            );
+      if (args.length === 1) {
+        //Validation
+        if (!dayjs(args[0]).isValid()) {
+          msg.reply(
+            `Invalid time string provided. Current time string: \`${dayjs()
+              .utc()
+              .toISOString()}\``
+          );
 
-            return;
-          }
+          return;
+        }
 
-          const endTime = dayjs(args[0]).utc();
+        const endTime = dayjs(args[0]).utc();
 
-          try {
-            const newConfig = await updateMaintenanceEnd(endTime.toDate());
+        try {
+          const newConfig = await updateMaintenanceEnd(endTime.toDate());
 
-            if (newConfig.isMaintenance) await setPostMaintWindow(args[0]);
+          if (newConfig.isMaintenance) await setPostMaintWindow(args[0]);
 
-            config[0] = newConfig;
+          config[0] = newConfig;
 
-            msg.reply(
-              `Maintenance adjusted to end at \`${endTime.toISOString()}\`.`
-            );
-          } catch (err) {
-            console.error(err);
-          }
+          msg.reply(
+            `Maintenance adjusted to end at \`${endTime.toISOString()}\`.`
+          );
+        } catch (err) {
+          console.error(err);
         }
       }
     }
