@@ -7,7 +7,7 @@ module.exports = {
   name: "restart",
   description: "Restart the bot.",
   guildOnly: true,
-  role: [process.env.MOD_ROLE_ID],
+  role: "mod",
   async execute(msg) {
     if (msg.channelId === process.env.MOD_CHANNEL_ID) {
       await msg.reply({

@@ -9,7 +9,7 @@ module.exports = {
   description:
     "Set maintenance time. Syntax: `!setmaint <startTime> <endTime>`",
   guildOnly: true,
-  role: [process.env.MOD_ROLE_ID],
+  role: "mod",
   async execute(msg, args) {
     if (msg.channelId === process.env.MOD_CHANNEL_ID) {
       if (args.length === 2) {

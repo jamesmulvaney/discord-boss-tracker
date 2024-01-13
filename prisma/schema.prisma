@@ -17,6 +17,7 @@ model Config {
   maintStart    DateTime?
   maintEnd      DateTime?
   isSeason      Boolean
+  modRoles      String[]
 }
 
 model Channel {

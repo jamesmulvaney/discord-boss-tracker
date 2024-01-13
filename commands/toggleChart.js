@@ -9,7 +9,7 @@ module.exports = {
   name: "toggle",
   description: "Hide or unhide a boss chart. Syntax: `!toggle <bossAlias>`",
   guildOnly: true,
-  role: [process.env.MOD_ROLE_ID],
+  role: "mod",
   execute(msg, args) {
     if (msg.channelId === process.env.MOD_CHANNEL_ID) {
       const alias = args.join(" ");

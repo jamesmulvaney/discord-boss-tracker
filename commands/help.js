@@ -6,7 +6,7 @@ module.exports = {
   name: "help",
   description: "A list of bot commands.",
   guildOnly: true,
-  role: [process.env.MOD_ROLE_ID],
+  role: "mod",
   execute(msg) {
     if (msg.channelId === process.env.MOD_CHANNEL_ID) {
       let commandList = "**List of Commands:**\n";

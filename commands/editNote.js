@@ -8,7 +8,7 @@ module.exports = {
   description:
     "Edit a boss's note that is sent along side the status chart. Syntax: `!editnote <alias> [...note]`",
   guildOnly: true,
-  role: [process.env.MOD_ROLE_ID],
+  role: "mod",
   async execute(msg) {
     if (msg.channelId === process.env.MOD_CHANNEL_ID) {
       const [_cmdName, ...args] = msg.content.trim().split(/\s+/);

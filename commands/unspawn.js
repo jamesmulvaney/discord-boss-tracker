@@ -9,7 +9,7 @@ module.exports = {
   name: "unspawn",
   description: "Unspawn a false boss spawn. Syntax: `!unspawn <bossAlias>`",
   guildOnly: true,
-  role: [process.env.MOD_ROLE_ID],
+  role: "mod",
   async execute(msg, args) {
     if (msg.channelId === process.env.MOD_CHANNEL_ID) {
       const alias = args.join("");

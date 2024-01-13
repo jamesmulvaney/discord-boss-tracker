@@ -10,7 +10,7 @@ module.exports = {
   description:
     "Adjust a bosses clear time and window timer. Syntax: `!adjust <bossAlias> <killTime>`",
   guildOnly: true,
-  role: [process.env.MOD_ROLE_ID],
+  role: "mod",
   async execute(msg, args) {
     if (msg.channelId === process.env.MOD_CHANNEL_ID) {
       if (args.length === 2) {

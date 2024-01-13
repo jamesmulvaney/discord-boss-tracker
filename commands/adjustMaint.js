@@ -10,7 +10,7 @@ module.exports = {
   description:
     "Adjust a maintenance's end time. Syntax: `!adjustmaint <endTime>`",
   guildOnly: true,
-  role: [process.env.MOD_ROLE_ID],
+  role: "mod",
   async execute(msg, args) {
     if (msg.channelId === process.env.MOD_CHANNEL_ID) {
       if (args.length === 1) {

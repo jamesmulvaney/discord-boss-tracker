@@ -1,6 +1,7 @@
 const { Events } = require("discord.js");
-const Logger = require("../utils/logger");
 const { checkMessage } = require("../boss-handler/handleMessages");
+const { config } = require("../config");
+const Logger = require("../utils/logger");
 
 module.exports = {
   name: Events.MessageCreate,
@@ -22,12 +23,21 @@ module.exports = {
       if (command.role) {
         let hasPermission = false;
 
-        command.role.forEach((roleId) => {
-          if (message.member?.roles.cache.has(roleId)) {
-            hasPermission = true;
-            return;
-          }
-        });
+        if (command.role === "mod") {
+          config[0].modRoles.forEach((roleId) => {
+            if (message.member?.roles.cache.has(roleId)) {
+              hasPermission = true;
+              return;
+            }
+          });
+        } else {
+          command.role.forEach((roleId) => {
+            if (message.member?.roles.cache.has(roleId)) {
+              hasPermission = true;
+              return;
+            }
+          });
+        }
 
         if (!hasPermission) return;
       }

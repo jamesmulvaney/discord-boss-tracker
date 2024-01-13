@@ -18,7 +18,7 @@ module.exports = {
       try {
         await command.execute(interaction);
       } catch (err) {
-        Logger.error(err);
+        console.log(err);
 
         await interaction.reply({
           content: "There was an error running that command.",
@@ -30,7 +30,7 @@ module.exports = {
         if (!command.autocomplete) return;
         await command.autocomplete(interaction);
       } catch (err) {
-        Logger.error(err);
+        console.log(err);
       }
     }
   },
