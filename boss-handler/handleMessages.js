@@ -2,12 +2,37 @@ const { activeBosses } = require("./activeBosses");
 const { Boss } = require("./class/Boss");
 const { findBossByAlias } = require("./findBossByAlias");
 const { sendModLog } = require("../utils/sendModLog");
+const { callBoss } = require("./callBoss");
 const Logger = require("../utils/logger");
 const dayjs = require("dayjs");
 const utc = require("dayjs/plugin/utc");
+const { config } = require("../config");
 dayjs.extend(utc);
 
 async function checkMessage(message) {
+  /*
+    Check for spawn command and spawn the boss.
+    Ex: "spawn bheg"
+  */
+  if (message.content.startsWith("spawn")) {
+    const allowedRoles = [process.env.HELPFUL_ROLE_ID, ...config[0].modRoles];
+    let hasPermission = false;
+
+    allowedRoles.forEach((roleId) => {
+      if (message.member?.roles.cache.has(roleId)) {
+        hasPermission = true;
+        return;
+      }
+    });
+
+    if (hasPermission) {
+      const [_, ...alias] = message.content.trim().split(/\s+/);
+      callBoss(message, alias);
+
+      return;
+    }
+  }
+
   /* 
     Check for revive command and silently restart the boss session.
     Ex: "bheg revive"
