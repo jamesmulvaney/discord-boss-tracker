@@ -78,6 +78,7 @@ class Boss {
         () => {
           if (!this.isHidden) this.deleteLastMessage();
           this.clearBoss("force");
+          this.forceClearTask.stop();
 
           Logger.log(`${this.bossInfo.name} auto-cleared.`);
 

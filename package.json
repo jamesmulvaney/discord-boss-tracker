@@ -12,20 +12,20 @@
   },
   "license": "ISC",
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "nodemon": "^2.0.22"
   },
   "dependencies": {
     "@colors/colors": "^1.6.0",
-    "@googleapis/calendar": "^9.3.1",
-    "@prisma/client": "^4.10.1",
+    "@googleapis/calendar": "^9.7.6",
+    "@prisma/client": "^4.16.2",
     "bufferutil": "^4.0.8",
-    "canvas": "^2.11.0",
+    "canvas": "^2.11.2",
     "cross-env": "^7.0.3",
-    "dayjs": "^1.11.7",
-    "discord.js": "^14.7.1",
-    "dotenv": "^16.0.3",
-    "node-cron": "^3.0.2",
-    "prisma": "^4.10.1",
-    "utf-8-validate": "^6.0.3"
+    "dayjs": "^1.11.11",
+    "discord.js": "^14.15.3",
+    "dotenv": "^16.4.5",
+    "node-cron": "^3.0.3",
+    "prisma": "^4.16.2",
+    "utf-8-validate": "^6.0.4"
   }
 }

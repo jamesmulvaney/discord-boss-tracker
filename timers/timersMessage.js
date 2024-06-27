@@ -57,7 +57,7 @@ async function timersMessage(client) {
     const time = parseElapsed(activeBoss.startTime);
     const name = nameWithPadding(activeBoss.bossInfo.shortName, time.length);
 
-    activeList += `${name} ${time} elapsed            \n`;
+    activeList += `${name} ${time} elapsed              \n`;
   }
 
   //Sort schedule
@@ -73,7 +73,7 @@ async function timersMessage(client) {
     const name = nameWithPadding(boss.shortName, time.length);
 
     scheduleList += `${name} ${time} until ${
-      boss.name === "Vell" ? "30m warning " : "spawn        "
+      boss.name === "Vell" ? "30m warning " : "spawn          "
     }\n`;
   }
 
@@ -103,7 +103,7 @@ async function timersMessage(client) {
       const time = parseTimeUntil(windowOpen);
       const name = nameWithPadding(boss.shortName, time.length);
 
-      notInWindowList += `${name} ${time} until window opens \n`;
+      notInWindowList += `${name} ${time} until window opens   \n`;
     } else if (
       currentTime.isAfter(windowOpen) &&
       currentTime.isBefore(windowClose)
@@ -116,7 +116,7 @@ async function timersMessage(client) {
       const time = parseElapsed(windowClose);
       const name = nameWithPadding(boss.shortName, time.length);
 
-      inWindowList += `${name} ${time} late               \n`;
+      inWindowList += `${name} ${time} late                 \n`;
     }
   }
 
