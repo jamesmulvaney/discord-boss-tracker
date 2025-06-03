@@ -195,6 +195,86 @@ async function main() {
     },
   });
 
+  //Bulgasal
+  await prisma.boss.upsert({
+    where: {
+      name: "Bulgasal",
+    },
+    update: {},
+    create: {
+      name: "Bulgasal",
+      shortName: "Bulgasal",
+      aliases: "bulg?a?s?a?l?",
+      avatar: "https://i.imgur.com/qdhwnne.png",
+      isWorldBoss: true,
+      status: [{}],
+      windowCooldown: 0,
+      forceDespawnTime: 30,
+      forceClearTime: 31,
+      isUber: false,
+    },
+  });
+
+  //Uturi
+  await prisma.boss.upsert({
+    where: {
+      name: "Uturi",
+    },
+    update: {},
+    create: {
+      name: "Uturi",
+      shortName: "Uturi",
+      aliases: "utur?i?",
+      avatar: "https://i.imgur.com/25kTsf5.png",
+      isWorldBoss: true,
+      status: [{}],
+      windowCooldown: 0,
+      forceDespawnTime: 30,
+      forceClearTime: 31,
+      isUber: false,
+    },
+  });
+
+  //Sangoon
+  await prisma.boss.upsert({
+    where: {
+      name: "Sangoon",
+    },
+    update: {},
+    create: {
+      name: "Sangoon",
+      shortName: "Sangoon",
+      aliases: "sang?o?o?n?",
+      avatar: "https://i.imgur.com/V1t0qZS.png",
+      isWorldBoss: true,
+      status: [{}],
+      windowCooldown: 0,
+      forceDespawnTime: 30,
+      forceClearTime: 31,
+      isUber: false,
+    },
+  });
+
+  //Golden Pig King
+  await prisma.boss.upsert({
+    where: {
+      name: "Pig",
+    },
+    update: {},
+    create: {
+      name: "Pig",
+      shortName: "Golden Pig King",
+      aliases: "pi?g|golde?n?|king|pig\\s?king",
+      avatar: "https://i.imgur.com/DqXrZak.png",
+      isWorldBoss: true,
+      status: [{}],
+      windowCooldown: 0,
+      forceDespawnTime: 30,
+      forceClearTime: 31,
+      isUber: false,
+    },
+  });
+
   /* 
     Empowered World Bosses
   */

@@ -50,6 +50,10 @@ These are the bosses that are set up in the database when `npx prisma db seed` i
 | Quint | Quint | true |
 | Muraka | Muraka | true |
 | Offin | Offin | true |
+| Bulgasal | Bulgasal | true |
+| Uturi | Uturi | true |
+| Sangoon | Sangoon | true |
+| Golden Pig King | Pig | true |
 | Dastard Bheg | Bheg | false |
 | Red Nose | RedNose | false |
 | Dim Tree | Tree | false |

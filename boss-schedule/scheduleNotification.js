@@ -82,8 +82,8 @@ async function scheduleNotification(client) {
               content: `${boss.shortName} spawns in ~${
                 boss.shortName === "Vell" ? "30" : reminderTime
               } minutes. <#${process.env.STATUS_CHANNEL_ID}> ${
-                boss.roleId && `<@&${boss.roleId}> `
-              }\`${dayjs().utc().format("YYYY/MM/DD HH:mm:ss")} UTC\``,
+                this.bossInfo.roleId ? `<@&${this.bossInfo.roleId}>` : ""
+              }`,
               username: `${boss.name}`,
               avatarURL: boss.avatar,
             });

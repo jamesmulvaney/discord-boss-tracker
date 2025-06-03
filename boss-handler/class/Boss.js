@@ -157,9 +157,7 @@ class Boss {
     notificationWebhook.send({
       content: `${this.bossInfo.name} has spawned. <#${
         process.env.STATUS_CHANNEL_ID
-      }> ${this.bossInfo.roleId && `<@&${this.bossInfo.roleId}> `}\`${dayjs()
-        .utc()
-        .format("YYYY/MM/DD HH:mm:ss")} UTC\``,
+      }> ${this.bossInfo.roleId ? `<@&${this.bossInfo.roleId}>` : ""}`,
       username: `${this.bossInfo.name}`,
       avatarURL: this.bossInfo.avatar,
     });
