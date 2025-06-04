@@ -10,9 +10,9 @@ async function sendModLog(client, channel, log, user, note) {
     : true;
 
   await logChannel.send({
-    content: `\`${currentTime}\` ${channel} \`${log}\` ${
+    content: `\`${currentTime}\` ${channel} ${
       shouldMention ? user : `${user.username} *${user.id}*`
-    } ${note ? `\`${note}\`` : ""}`,
+    } \`${log}\` ${note ? `\`${note}\`` : ""}`,
   });
 }
 
