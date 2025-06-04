@@ -16,7 +16,7 @@ dayjs.extend(utc);
 
 async function scheduleNotification(client) {
   const schedule = await parseCalendar();
-  const nextBoss = [];
+  const upcomingBoss = [];
   const reminderTime = 5;
 
   if (schedule.length === 0) {
@@ -39,22 +39,22 @@ async function scheduleNotification(client) {
     return;
   }
 
-  //Check for double spawn
-  if (dayjs(schedule[0].nextSpawn).isSame(dayjs(schedule[1].nextSpawn))) {
-    nextBoss.push(schedule[0], schedule[1]);
-  } else {
-    nextBoss.push(schedule[0]);
+  //Check for multi spawn
+  for (const boss of schedule) {
+    if (dayjs(schedule[0].nextSpawn).isSame(boss.nextSpawn)) {
+      upcomingBoss.push(boss);
+    }
   }
 
-  const spawnsAt = dayjs(nextBoss[0].nextSpawn).utc();
+  const spawnsAt = dayjs(upcomingBoss[0].nextSpawn).utc();
   const reminderAt =
-    nextBoss[0].shortName === "Vell"
+    upcomingBoss[0].shortName === "Vell"
       ? spawnsAt
       : spawnsAt.subtract(reminderTime, "minutes");
 
   //Schedule a reminder in boss-notifications
   if (!dayjs().utc().isAfter(reminderAt)) {
-    for (const boss of nextBoss) {
+    for (const boss of upcomingBoss) {
       Logger.log(
         `Scheduled reminder for ${
           boss.shortName
@@ -79,10 +79,10 @@ async function scheduleNotification(client) {
             });
 
             notificationWebhook.send({
-              content: `${boss.shortName} spawns in ~${
+              content: `${boss.shortName} will spawn in ~${
                 boss.shortName === "Vell" ? "30" : reminderTime
               } minutes. <#${process.env.STATUS_CHANNEL_ID}> ${
-                this.bossInfo.roleId ? `<@&${this.bossInfo.roleId}>` : ""
+                boss.roleId ? `<@&${boss.roleId}>` : ""
               }`,
               username: `${boss.name}`,
               avatarURL: boss.avatar,

@@ -13,12 +13,18 @@ async function parseCalendar() {
   await clearSpawnTime();
 
   for (const entry of calendar) {
-    if (!completed.includes(entry.summary)) {
-      const startTime = dayjs(entry.start.dateTime).format();
-      const updatedBoss = await setNextSpawn(entry.summary, startTime);
+    /* 
+      A '/' in the event summary can spawn multiple bosses per event.
+      Ex: 'Sangoon/Garmoth' = Sangoon and Garmoth will spawn at the same time
+    */
+    const bossNames = entry.summary.split("/");
+    const startTime = dayjs(entry.start.dateTime).format();
 
-      schedule.push(updatedBoss);
-      completed.push(entry.summary);
+    for (const name of bossNames) {
+      if (!completed.includes(name)) {
+        schedule.push(await setNextSpawn(name, startTime));
+        completed.push(name);
+      }
     }
   }
 
