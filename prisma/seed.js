@@ -258,12 +258,12 @@ async function main() {
   //Golden Pig King
   await prisma.boss.upsert({
     where: {
-      name: "Pig",
+      name: "Golden Pig King",
     },
     update: {},
     create: {
-      name: "Pig",
-      shortName: "Golden Pig King",
+      name: "Golden Pig King",
+      shortName: "Pig",
       aliases: "pi?g|golde?n?|king|pig\\s?king",
       avatar: "https://i.imgur.com/DqXrZak.png",
       isWorldBoss: true,
